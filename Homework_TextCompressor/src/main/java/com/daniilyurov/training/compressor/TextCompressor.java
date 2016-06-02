@@ -2,54 +2,82 @@ package com.daniilyurov.training.compressor;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class Compressor {
+/**
+ * The class that can read a text file, compress the text using Huffman Coding, and save it into a file.
+ * The result file will contain two files:
+ *    - the compressed text;
+ *    - the dictionary holding keys to expand the text to original.
+ */
+public class TextCompressor {
     String text;
+    Dictionary dictionary;
 
-    public Compressor(String text) {
-        this.text = text;
+    /**
+     * Reads the text from the first text file, compresses it using Huffman Coding,
+     * and saves it into the second file.
+     * @param uncompressedFile
+     *        the file to read the original text from.
+     * @param compressedFile
+     *        the file to write the compressed version to.
+     */
+    public void compress(File uncompressedFile, File compressedFile) throws IOException {
+        readText(uncompressedFile);
+        FileOutputStream fileOutput = new FileOutputStream(compressedFile);
+        ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
+
+        addComponentToZip(zipOutput, this::compressText, "text_data");
+        addComponentToZip(zipOutput, this::compressDictionary, "dictionary");
+
+        zipOutput.close();
+        fileOutput.close();
     }
 
-    public void compress(String filename) throws IOException {
-        FileOutputStream fos = new FileOutputStream(filename + ".zip");
-        ZipOutputStream zos = new ZipOutputStream(fos);
-
-        Dictionary dictionary = getDictionary(text);
-        ZipEntry zipEntry = new ZipEntry("dict");
-        zos.putNextEntry(zipEntry);
-        new ObjectOutputStream(zos).writeObject(dictionary);
-
-        Accumulator accumulator = new Accumulator(dictionary);
-        text.codePoints().forEach(accumulator::accumulate);
-        zipEntry = new ZipEntry("data");
-        zos.putNextEntry(zipEntry);
-        accumulator.write(zos);
-
-        zos.close();
-        fos.close();
+    private void readText(File uncompressedFile) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(uncompressedFile));
+        char[] buf = new char[4096];
+        int length;
+        StringBuilder result = new StringBuilder();
+        while ((length = br.read(buf)) != -1) {
+            result.append(buf, 0, length);
+        }
+        this.text = result.toString();
+        this.dictionary = getDictionary(text);
     }
 
-    public void compress(OutputStream textOutputStream, OutputStream dictionaryOutputStream) throws IOException {
-        Dictionary dictionary = getDictionary(text);
-        Accumulator accumulator = new Accumulator(dictionary);
-        text.codePoints().forEach(accumulator::accumulate);
-        accumulator.write(textOutputStream);
-        textOutputStream.flush();
-        textOutputStream.close();
+    private void addComponentToZip(ZipOutputStream targetZip, Consumer<OutputStream> algorithm, String componentName)
+            throws IOException {
+        ZipEntry zipEntry = new ZipEntry(componentName);
+        targetZip.putNextEntry(zipEntry);
+        algorithm.accept(targetZip);
+    }
 
-        ObjectOutputStream os = new ObjectOutputStream(dictionaryOutputStream);
-        os.writeObject(dictionary);
-        os.flush();
-        os.close();
+    private void compressDictionary(OutputStream dictionaryOutputStream) {
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(dictionaryOutputStream);
+            os.writeObject(dictionary);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void compressText(OutputStream textOutputStream) {
+        try {
+            Accumulator accumulator = new Accumulator(dictionary);
+            text.codePoints().forEach(accumulator::accumulate);
+            accumulator.write(textOutputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // transforms PriorityQueue into tree and returns a root node
-    // CAUTION - PriorityQueue itself gets destroyed!
-    public Node treefy(PriorityQueue<Node> k) {
+    private Node buildTree(PriorityQueue<Node> k) {
         if (k.size() == 0) {
             return null;
         }
@@ -62,26 +90,20 @@ public class Compressor {
         return k.remove(); //last element left is the root.
     }
 
-    public PriorityQueue<Node> analyze(String text) {
+    private PriorityQueue<Node> analyze(String text) {
         PriorityQueue<Node> result = new PriorityQueue<>();
-
-        Stream<Integer> strm = text.codePoints().mapToObj(Integer::new);
-
-        Map<Integer, Long> map = strm.collect(Collectors.groupingBy(Integer::intValue, Collectors.counting()));
-
-        map.forEach((codePoint, frequency) -> {
-            result.add(new Node(codePoint, frequency));
-        });
-
+        Stream<Integer> stream = text.codePoints().mapToObj(Integer::new);
+        Map<Integer, Long> map = stream.collect(Collectors.groupingBy(Integer::intValue, Collectors.counting()));
+        map.forEach((codePoint, frequency) -> result.add(new Node(codePoint, frequency)));
         return result;
     }
 
-    public Dictionary getDictionary(String text) {
+    private Dictionary getDictionary(String text) {
         PriorityQueue<Node> nodes = analyze(text);
-        Node root = treefy(nodes);
+        Node root = buildTree(nodes);
 
         Map<Integer, List<Boolean>> map = new HashMap<>();
-        root.populate(map);
+        if (root != null) root.populate(map);
         return new Dictionary(map);
     }
 
@@ -102,7 +124,7 @@ public class Compressor {
             this.frequency = lessFrequent.frequency + moreFrequent.frequency;
         }
 
-        public void populate(Map<Integer, List<Boolean>> map) {
+        void populate(Map<Integer, List<Boolean>> map) {
             if (this.left == null && this.right == null) {
                 LinkedList<Boolean> val = new LinkedList<>();
                 val.add(false);
@@ -160,7 +182,6 @@ public class Compressor {
                 dictionary.setBitsInLastByte(size);
                 packByte(size);
             }
-
         }
 
         private void packByte(int length) {
