@@ -20,7 +20,7 @@ Implementing design patterns
                                    вариант для возможного восстановления статьи висходном виде.
 
 + *Prototype* : java.lang.Cloneable
-+ *Concrete Prototype* : [WikipediaArticle]()
-+ *Client* : [WikipediaFile]()
++ *Concrete Prototype* : [WikipediaArticle](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/prototype/wikipedia/WikipediaArticle.java)
++ *Client* : [WikipediaFile](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/prototype/wikipedia/WikipediaArticleFile.java)
 
-*Service Client* : [WikipediaArticleFileIntegrationTest]()
+*Service Client* : [WikipediaArticleFileIntegrationTest](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/test/java/com/daniilyurov/training/patterns/prototype/wikipedia/WikipediaArticleFileIntegrationTest.java)
