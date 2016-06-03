@@ -11,10 +11,15 @@ import java.util.zip.ZipInputStream;
  */
 public class TextExpander {
 
-    private byte[] bytes;
+    private byte[] bytesToDecode;
     private Dictionary dictionary;
-    private StringBuilder bld = new StringBuilder();
-    private List<Boolean> codePointBits;
+    private StringBuilder decodedTextBuilder;
+    private List<Boolean> unrecognizedCodePointBits;
+
+    public TextExpander() {
+        this.decodedTextBuilder = new StringBuilder();
+        this.unrecognizedCodePointBits = new LinkedList<>();
+    }
 
     /**
      * Reads the compressed file, expands it and
@@ -40,45 +45,59 @@ public class TextExpander {
         }
         zipInput.close();
         fileInput.close();
-        return decompose();
+        return decompress();
     }
 
     private void readBytes(InputStream textInputStream) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteCollection = new ByteArrayOutputStream();
         byte[] buffer = new byte[4096];
         int length;
         while ((length = textInputStream.read(buffer)) != -1) {
-            out.write(buffer, 0, length);
+            byteCollection.write(buffer, 0, length);
         }
-        this.bytes = out.toByteArray();
+        this.bytesToDecode = byteCollection.toByteArray();
     }
 
     private void readDictionary(InputStream dictionaryInputStream) throws IOException, ClassNotFoundException {
-        ObjectInputStream is = new ObjectInputStream(dictionaryInputStream);
-        this.dictionary = (Dictionary) is.readObject();
+        ObjectInputStream objectInput = new ObjectInputStream(dictionaryInputStream);
+        this.dictionary = (Dictionary) objectInput.readObject();
     }
 
-    String decompose() {
-        codePointBits = new LinkedList<>();
-
-        for (int n = 0; n < bytes.length - 1; n++) {
-            dec(bytes[n], 8);
-        }
-        dec(bytes[bytes.length - 1], dictionary.getBitsInLastByte());
-        return bld.toString();
+    private String decompress() {
+        decodeAllButLast(bytesToDecode);
+        decodeLast(bytesToDecode);
+        return decodedTextBuilder.toString();
     }
 
-    private void dec(byte b, int max) {
-        for (int i = 0; i < max; i++) {
-            byte mask = (byte)(1 << i);
-            boolean bl = (b & mask) == mask;
-            codePointBits.add(bl);
-            Integer c;
-            if ((c = dictionary.find(codePointBits)) != null) {
-                codePointBits = new LinkedList<>();
-                bld.appendCodePoint(c);
-            }
+    private void decodeAllButLast(byte[] bytesToDecode) {
+        for (int item = 0; item < bytesToDecode.length - 1; item++) {
+            decode(bytesToDecode[item], 8);
         }
+    }
+
+    private void decodeLast(byte[] bytesToDecode) {
+        decode(bytesToDecode[bytesToDecode.length - 1], dictionary.getBitsInLastByte());
+    }
+
+    private void decode(byte byteToDecode, int usefulBitsInByte) {
+        for (int bitIndex = 0; bitIndex < usefulBitsInByte; bitIndex++) {
+            boolean bit = getBit(byteToDecode, bitIndex);
+            unrecognizedCodePointBits.add(bit);
+            recognize(unrecognizedCodePointBits);
+        }
+    }
+
+    private void recognize(List<Boolean> unrecognizedCodePointBits) {
+        Integer codePoint = dictionary.find(unrecognizedCodePointBits);
+        if (codePoint != null) {
+            decodedTextBuilder.appendCodePoint(codePoint);
+            unrecognizedCodePointBits.clear();
+        }
+    }
+
+    private boolean getBit(byte b, int bitIndex) {
+        byte mask = (byte)(1 << bitIndex);
+        return (b & mask) == mask;
     }
 
 }

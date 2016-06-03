@@ -69,7 +69,7 @@ public class TextCompressor {
     private void compressText(OutputStream textOutputStream) {
         try {
             Accumulator accumulator = new Accumulator(dictionary);
-            text.codePoints().forEach(accumulator::accumulate);
+            text.codePoints().forEach(accumulator::addBits);
             accumulator.write(textOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -160,24 +160,24 @@ public class TextCompressor {
 
     private static class Accumulator {
         Dictionary dictionary;
-        List<Byte> l;
-        Queue<Boolean> toProcess;
+        List<Byte> bytes;
+        Queue<Boolean> bits;
 
         Accumulator(Dictionary dictionary) {
             this.dictionary = dictionary;
-            this.l = new ArrayList<>();
-            this.toProcess = new LinkedList<>();
+            this.bytes = new ArrayList<>();
+            this.bits = new LinkedList<>();
         }
 
-        void accumulate(int i) {
-            toProcess.addAll(dictionary.getBits(i));
+        void addBits(int i) {
+            bits.addAll(dictionary.getBits(i));
         }
 
-        void process() {
-            while (toProcess.size() > 8) {
+        private void packBitsIntoBytes() {
+            while (bits.size() > 8) {
                 packByte(8);
             }
-            int size = toProcess.size();
+            int size = bits.size();
             if (size > 0) {
                 dictionary.setBitsInLastByte(size);
                 packByte(size);
@@ -187,22 +187,22 @@ public class TextCompressor {
         private void packByte(int length) {
             byte result = 0;
             for (int i = 0; i < length; i++) {
-                if (toProcess.remove()) {
+                if (bits.remove()) {
                     result |= (1<<i);
                 }
             }
-            l.add(result);
+            bytes.add(result);
         }
 
         void write(OutputStream out) throws IOException {
-            process();
+            packBitsIntoBytes();
             out.write(getBytes());
         }
 
         private byte[] getBytes(){
-            byte[] result = new byte[l.size()];
+            byte[] result = new byte[bytes.size()];
             for (int i = 0; i < result.length; i++) {
-                result[i] = l.get(i);
+                result[i] = bytes.get(i);
             }
             return result;
         }
