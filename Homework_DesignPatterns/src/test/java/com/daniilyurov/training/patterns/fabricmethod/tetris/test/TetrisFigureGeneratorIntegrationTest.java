@@ -1,6 +1,8 @@
 package com.daniilyurov.training.patterns.fabricmethod.tetris.test;
 
-import com.daniilyurov.training.patterns.fabricmethod.tetris.test.creators.RandomFigureCreator;
+import com.daniilyurov.training.patterns.fabricmethod.tetris.FigureCreator;
+import com.daniilyurov.training.patterns.fabricmethod.tetris.TetrisComponent;
+import com.daniilyurov.training.patterns.fabricmethod.tetris.creators.RandomFigureCreator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;

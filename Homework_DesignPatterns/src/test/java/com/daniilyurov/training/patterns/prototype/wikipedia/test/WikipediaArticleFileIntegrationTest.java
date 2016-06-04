@@ -1,5 +1,7 @@
 package com.daniilyurov.training.patterns.prototype.wikipedia.test;
 
+import com.daniilyurov.training.patterns.prototype.wikipedia.WikipediaArticle;
+import com.daniilyurov.training.patterns.prototype.wikipedia.WikipediaArticleFile;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -1,6 +1,7 @@
 package com.daniilyurov.training.patterns.strategy.game.test;
 
-import com.daniilyurov.training.patterns.strategy.game.test.characters.*;
+import com.daniilyurov.training.patterns.strategy.game.Character;
+import com.daniilyurov.training.patterns.strategy.game.characters.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
