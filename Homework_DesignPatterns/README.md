@@ -24,3 +24,14 @@ Implementing design patterns
 + *Client* : [WikipediaFile](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/prototype/wikipedia/WikipediaArticleFile.java)
 
 *Service Client* : [WikipediaArticleFileIntegrationTest](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/test/java/com/daniilyurov/training/patterns/prototype/wikipedia/WikipediaArticleFileIntegrationTest.java)
+
+##Factory Method (Virtual Constructor)
+***Tetris Figure Generator* Task:** Фигуры игры «тетрис». Реализовать процесс случайного
+                                    выбора фигуры из конечного набора фигур. Предусмотреть 
+                                    появление супер-фигур с большим числом клеток, чем обычные.
+
++ *Product* : [Figure]()
++ *Concrete Product* : [Figure I...Z, SuperFigure]()
++ *Creator* : [FigureCreator]()
++ *Concrete Creator* : [RandomFigureCreator]()
++ *(Client)* : [TetrisComponent]()
