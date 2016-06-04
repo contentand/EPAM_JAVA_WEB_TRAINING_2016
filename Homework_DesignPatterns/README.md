@@ -30,8 +30,8 @@ Implementing design patterns
                                     выбора фигуры из конечного набора фигур. Предусмотреть 
                                     появление супер-фигур с большим числом клеток, чем обычные.
 
-+ *Product* : [Figure]()
-+ *Concrete Product* : [Figure I...Z, SuperFigure]()
-+ *Creator* : [FigureCreator]()
-+ *Concrete Creator* : [RandomFigureCreator]()
-+ *(Client)* : [TetrisComponent]()
++ *Product* : [Figure](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/Figure.java)
++ *Concrete Product* : [Figure I...Z, SuperFigure](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/figures)
++ *Creator* : [FigureCreator](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/FigureCreator.java)
++ *Concrete Creator* : [RandomFigureCreator](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/creators/RandomFigureCreator.java)
++ *(Client)* : [TetrisComponent](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/TetrisComponent.java)
