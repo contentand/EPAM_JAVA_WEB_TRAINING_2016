@@ -35,3 +35,13 @@ Implementing design patterns
 + *Creator* : [FigureCreator](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/FigureCreator.java)
 + *Concrete Creator* : [RandomFigureCreator](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/creators/RandomFigureCreator.java)
 + *(Client)* : [TetrisComponent](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/fabricmethod/tetris/TetrisComponent.java)
+
+##Strategy
+***Fantasy Game* Task:** Разработать модель игровой системы. Предусмотреть 
+наличие фентезийных персонажей: орки, тролли, пегасы, эльфы, вампиры, гарпии и др. 
+Учесть, что некоторые персонажи ходят, другие— летают, третьи— и ходят и летают. 
+Летать также может группа персонажей с помощью магии.
+
++ *Strategy* : [FlyingProperty](), [WalkingProperty]()
++ *Concrete Strategy* : [MagicFlyingProperty, ...](), [UsualWalkingProperty, ...]()
++ *Context* : [Character]() ([Orc, Elf, Troll, ...]())
