@@ -27,7 +27,9 @@ public class TextCompressor {
      *        the file to write the compressed version to.
      */
     public void compress(File uncompressedFile, File compressedFile) throws IOException {
+
         readText(uncompressedFile);
+
         FileOutputStream fileOutput = new FileOutputStream(compressedFile);
         ZipOutputStream zipOutput = new ZipOutputStream(fileOutput);
 
