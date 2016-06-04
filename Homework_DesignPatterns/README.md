@@ -42,6 +42,6 @@ Implementing design patterns
 Учесть, что некоторые персонажи ходят, другие— летают, третьи— и ходят и летают. 
 Летать также может группа персонажей с помощью магии.
 
-+ *Strategy* : [FlyingProperty](), [WalkingProperty]()
-+ *Concrete Strategy* : [MagicFlyingProperty, ...](), [UsualWalkingProperty, ...]()
-+ *Context* : [Character]() ([Orc, Elf, Troll, ...]())
++ *Strategy* : [FlyingProperty](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/FlyingProperty.java), [WalkingProperty](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/WalkingProperty.java)
++ *Concrete Strategy* : [MagicFlyingProperty, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/flying), [UsualWalkingProperty, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/walking)
++ *Context* : [Character](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/Character.java) ([Orc, Elf, Troll, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/characters))
