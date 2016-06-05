@@ -69,3 +69,33 @@ Implementing design patterns
 + *Concrete State* : [CancelledGrantState, ConfirmedGrantState, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/state/educationalgrant/grant_states)
 + *Context* : [GrantApplication](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/state/educationalgrant/GrantApplication.java)
 
+##Chain Of Responsibility
+***Bank Transfer* Task:** Прохождение платежа через банковскую систему сопровождается 
+целым рядом действий: фиксирующих, контролирующих, снимающих процент банка и прочие вычеты и действия. 
+Построить цепочки для различного вида платежей (обычных, льготных, государственных, 
+внутрибанковских) в соответствии с предметной областью и разработать модель системы.
+
++ *Handler* : [TransactionStep]()
++ *Concrete Handler* : [AccountLockStep, AccountUnlockStep, ...]()
++ *Client* : [MainTransactionChain](), [SubTransactionChain]()
+
+***Chain flow and model description:***
+
+> [**MainTransaction**]() : main chain invoked by client.
+
+> ***Step 1.*** [PaymentTypeSupportValidationStep]() : check source Bank and destination Bank and source and destination Account support the payment type.
+> ***Step 2.*** [AccountLockStep]() : lock source Account and destination Account
+
+>> [**SubTransaction**]() : nested chain invoked by main chain in case lock up is successful.
+
+>> ***Step 2.1.*** [TransferExpensesCalculationStep]() : add commissions and taxes of source Bank and destination Bank to the amount
+>> ***Step 2.2.*** [SufficientFundsValidationStep]() : check source Account has enough funds to cover account and additional costs.
+>> ***Step 2.3.*** [FundWithdrawalStep]() : withdraw and transfer money to all parties involved.
+
+> ***Step 3.*** [AccountUnlockStep]() : unlock source and destination Account
+
+
+
+
+
+
