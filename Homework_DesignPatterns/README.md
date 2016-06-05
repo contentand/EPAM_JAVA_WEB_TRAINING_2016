@@ -57,3 +57,14 @@ Implementing design patterns
 + *Concrete Subject* : [KyivPostOffice](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/KyivPostOffice.java)
 + *Observer* : [Subscriber](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/Subscriber.java)
 + *Concrete Observer* : [KyivSubscriber](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/KyivSubscriber.java)
+
+##State
+***Educational Grant Application* Task:** Заказ на получение гранта для обучения может находиться в 
+нескольких состояниях: создан, рассматривается, отложен, отклонен, подтвержден, отозван и т. д. 
+Определить логику изменения состояний и разработать модель системы.
+
+**!Note:** memory usage efficiency can possibly be improved by turning the Concrete States into Singletons.
+
++ *State* : [GrantState]()
++ *Concrete State* : [CancelledGrantState, ConfirmedGrantState, ...]()
++ *Context* : [GrantApplication]()
