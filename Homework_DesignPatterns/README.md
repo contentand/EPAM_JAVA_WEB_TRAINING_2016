@@ -53,7 +53,7 @@ Implementing design patterns
 
 **!Note:** due to the nature of the task, the implementation of Subject does not contain state.
 
-+ *Subject* : [PostOffice]()
-+ *Concrete Subject* : [KyivPostOffice]()
-+ *Observer* : [Subscriber]()
-+ *Concrete Observer* : [KyivSubscriber]()
++ *Subject* : [PostOffice](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/PostOffice.java)
++ *Concrete Subject* : [KyivPostOffice](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/KyivPostOffice.java)
++ *Observer* : [Subscriber](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/Subscriber.java)
++ *Concrete Observer* : [KyivSubscriber](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/observer/postoffice/KyivSubscriber.java)
