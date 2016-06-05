@@ -75,24 +75,27 @@ Implementing design patterns
 Построить цепочки для различного вида платежей (обычных, льготных, государственных, 
 внутрибанковских) в соответствии с предметной областью и разработать модель системы.
 
-+ *Handler* : [TransactionStep]()
-+ *Concrete Handler* : [AccountLockStep, AccountUnlockStep, ...]()
-+ *Client* : [MainTransactionChain](), [SubTransactionChain]()
++ *Handler* : [TransactionStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/TransactionStep.java)
++ *Concrete Handler* : [AccountLockStep, AccountUnlockStep, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction)
++ *Client* : [MainTransactionChain](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/MainTransaction.java), [SubTransactionChain](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/SubTransaction.java)
 
 ***Chain flow and model description:***
 
-> [**MainTransaction**]() : main chain invoked by client.
+> [**MainTransaction**](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/MainTransaction.java) : main chain invoked by client.
 
-> ***Step 1.*** [PaymentTypeSupportValidationStep]() : check source Bank and destination Bank and source and destination Account support the payment type.
-> ***Step 2.*** [AccountLockStep]() : lock source Account and destination Account
+> ***Step 1.*** [PaymentTypeSupportValidationStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/PaymentTypeSupportValidationStep.java) : check source Bank and destination Bank and source and destination Account support the payment type.
+>
+> ***Step 2.*** [AccountLockStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/AccountLockStep.java) : lock source Account and destination Account
 
->> [**SubTransaction**]() : nested chain invoked by main chain in case lock up is successful.
+>> [**SubTransaction**](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/SubTransaction.java) : nested chain invoked by main chain in case lock up is successful.
 
->> ***Step 2.1.*** [TransferExpensesCalculationStep]() : add commissions and taxes of source Bank and destination Bank to the amount
->> ***Step 2.2.*** [SufficientFundsValidationStep]() : check source Account has enough funds to cover account and additional costs.
->> ***Step 2.3.*** [FundWithdrawalStep]() : withdraw and transfer money to all parties involved.
+>> ***Step 2.1.*** [TransferExpensesCalculationStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/TransferExpensesCalculationStep.java) : add commissions and taxes of source Bank and destination Bank to the amount
+>>
+>> ***Step 2.2.*** [SufficientFundsValidationStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/SufficientFundsValidationStep.java) : check source Account has enough funds to cover account and additional costs.
+>>
+>> ***Step 2.3.*** [FundWithdrawalStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/FundWithdrawalStep.java) : withdraw and transfer money to all parties involved.
 
-> ***Step 3.*** [AccountUnlockStep]() : unlock source and destination Account
+> ***Step 3.*** [AccountUnlockStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/AccountUnlockStep.java) : unlock source and destination Account
 
 
 
