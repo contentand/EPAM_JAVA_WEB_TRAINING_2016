@@ -65,6 +65,7 @@ Implementing design patterns
 
 **!Note:** memory usage efficiency can possibly be improved by turning the Concrete States into Singletons.
 
-+ *State* : [GrantState]()
-+ *Concrete State* : [CancelledGrantState, ConfirmedGrantState, ...]()
-+ *Context* : [GrantApplication]()
++ *State* : [GrantState](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/state/educationalgrant/GrantState.java)
++ *Concrete State* : [CancelledGrantState, ConfirmedGrantState, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/state/educationalgrant/grant_states)
++ *Context* : [GrantApplication](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/state/educationalgrant/GrantApplication.java)
+
