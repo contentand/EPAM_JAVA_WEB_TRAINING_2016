@@ -45,3 +45,15 @@ Implementing design patterns
 + *Strategy* : [FlyingProperty](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/FlyingProperty.java), [WalkingProperty](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/WalkingProperty.java)
 + *Concrete Strategy* : [MagicFlyingProperty, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/flying), [UsualWalkingProperty, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/properties/walking)
 + *Context* : [Character](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/Character.java) ([Orc, Elf, Troll, ...](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/tree/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/strategy/game/characters))
+
+##Observer
+***Post Office* Task:** Разработать систему Почтовое отделение. Из издательства в почтовое 
+отделение поступают издаваемые газеты и журналы. Почтовое отделение отправляет полученные печатные 
+издания соответствующим подписчикам.
+
+**!Note:** due to the nature of the task, the implementation of Subject does not contain state.
+
++ *Subject* : [PostOffice]()
++ *Concrete Subject* : [KyivPostOffice]()
++ *Observer* : [Subscriber]()
++ *Concrete Observer* : [KyivSubscriber]()
