@@ -5,7 +5,7 @@ import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.films.
 import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.films.ShrekFilm;
 import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.films.TheLordOfTheRingsFilm;
 
-public class MyFilmFactory implements FilmFactory {
+public class MainFilmFactory implements FilmFactory {
 
     @Override
     public Film createFilm(Film.Name filmName, Localization.Language language) {

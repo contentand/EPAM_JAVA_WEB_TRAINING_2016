@@ -2,7 +2,7 @@ package com.daniilyurov.training.patterns.abstractfactory.filmdistribution.test;
 
 import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.FilmFactory;
 import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.Localization;
-import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.MyFilmFactory;
+import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.MainFilmFactory;
 import com.daniilyurov.training.patterns.abstractfactory.filmdistribution.films.Film;
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +22,7 @@ public class FilmDistributionIntegrationTest {
 
     @Before
     public void setup() {
-        factory = new MyFilmFactory();
+        factory = new MainFilmFactory();
     }
 
     @Test
