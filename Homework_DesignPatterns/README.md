@@ -97,8 +97,10 @@ Implementing design patterns
 
 > ***Step 3.*** [AccountUnlockStep](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/chain_of_responsibility/bank_transactions/transaction/AccountUnlockStep.java) : unlock source and destination Account
 
+##Memento
+***TicTacToe Game* Task:** Реализовать алгоритм игры «крестики-нолики». Реализовать возможность «взять назад ход»
 
-
-
-
++ *Caretaker* : [FieldMementoCaretaker]()
++ *Memento* : [FieldMemento]()
++ *Originator* : [Field]()
 
