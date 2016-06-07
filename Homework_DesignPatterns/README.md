@@ -104,3 +104,10 @@ Implementing design patterns
 + *Memento* : [FieldMemento](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/memento/tictactoe/FieldMemento.java)
 + *Originator* : [Field](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/memento/tictactoe/Field.java)
 
+##Flyweight
+***Bacteria Colony* Task:** Разработать систему учета процессов размножения колонии бактерий.
+
++ *Flyweight* : [BacteriaCore]()
++ *Concrete Flyweight* : [TerribleBacteriaCore]()
++ *Flyweight Factory* : [BacteriaCoreFactory]()
++ *Client* : [TerribleBacteria]()
