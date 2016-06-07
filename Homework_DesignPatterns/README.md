@@ -111,3 +111,17 @@ Implementing design patterns
 + *Concrete Flyweight* : [TerribleBacteriaCore](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/core/TerribleBacteriaCore.java)
 + *Flyweight Factory* : [BacteriaCoreFactory](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/core/BacteriaCoreFactory.java)
 + *Client* : [TerribleBacteria](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/TerribleBacteria.java)
+
+##Decorator
+***Medical Recipe* Tast:** Существует модель системы Рецепт. Модель позволяет в неизменяемом 
+виде хранить назначения врача и срок действия рецепта. Написать код приложения, 
+позволяющий продлевать срок действия уже существующего рецепта. 
+Выберите подходящий паттерн для реализации этого задания.
+ 
+Decorator pattern is the best choice. It ensures the original immutable instance is preserved.
+Additional information in the form of extra days is wrapped around the original.
+
++ *Component* : [Recipe]()
++ *Concrete Component* : [OriginalRecipe]()
++ *Decorator & Concrete Decorator* : [ProlongedRecipe]()
+ 
