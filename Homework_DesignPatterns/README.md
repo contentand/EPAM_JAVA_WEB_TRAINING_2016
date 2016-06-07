@@ -107,7 +107,7 @@ Implementing design patterns
 ##Flyweight
 ***Bacteria Colony* Task:** Разработать систему учета процессов размножения колонии бактерий.
 
-+ *Flyweight* : [BacteriaCore]()
-+ *Concrete Flyweight* : [TerribleBacteriaCore]()
-+ *Flyweight Factory* : [BacteriaCoreFactory]()
-+ *Client* : [TerribleBacteria]()
++ *Flyweight* : [BacteriaCore](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/core/BacteriaCore.java)
++ *Concrete Flyweight* : [TerribleBacteriaCore](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/core/TerribleBacteriaCore.java)
++ *Flyweight Factory* : [BacteriaCoreFactory](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/core/BacteriaCoreFactory.java)
++ *Client* : [TerribleBacteria](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/flyweight/bacteria/bacterias/TerribleBacteria.java)
