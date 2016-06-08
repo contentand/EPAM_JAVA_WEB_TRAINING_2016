@@ -121,7 +121,7 @@ Implementing design patterns
 Decorator pattern is the best choice. It ensures the original immutable instance is preserved.
 Additional information in the form of extra days is wrapped around the original.
 
-+ *Component* : [Recipe]()
-+ *Concrete Component* : [OriginalRecipe]()
-+ *Decorator & Concrete Decorator* : [ProlongedRecipe]()
++ *Component* : [Recipe](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/decorator/recipe/Recipe.java)
++ *Concrete Component* : [OriginalRecipe](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/decorator/recipe/OriginalRecipe.java)
++ *Decorator & Concrete Decorator* : [ProlongedRecipe](https://github.com/contentand/EPAM_JAVA_WEB_TRAINING_2016/blob/master/Homework_DesignPatterns/src/main/java/com/daniilyurov/training/patterns/decorator/recipe/ProlongedRecipe.java)
  
