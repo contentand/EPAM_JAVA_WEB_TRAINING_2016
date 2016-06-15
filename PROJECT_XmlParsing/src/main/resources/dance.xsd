@@ -1,0 +1,70 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:d="http://www.daniilyurov.com/training/project/xml/dancer"
+        targetNamespace="http://www.daniilyurov.com/training/project/xml/dance"
+        xmlns:tns="http://www.daniilyurov.com/training/project/xml/dance"
+        elementFormDefault="qualified">
+
+    <import namespace="http://www.daniilyurov.com/training/project/xml/dancer"
+            schemaLocation="PROJECT_XmlParsing/target/classes/dancer.xsd"/>
+
+    <element name="dance" type="tns:dances"/>
+
+    <complexType name="dances">
+        <sequence>
+            <element name="performance" type="tns:performance" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="performance">
+        <sequence>
+            <element ref="d:dancers"/>
+            <element name="type" type="tns:type"/>
+            <element name="scene" type="tns:scene"/>
+            <element name="number_of_dancers" type="tns:number_of_dancers"/>
+            <element name="music" type="tns:music"/>
+        </sequence>
+        <attribute name="number" type="tns:number" use="required"/>
+    </complexType>
+
+    <simpleType name="music">
+        <restriction base="string">
+            <enumeration value="фонограмма"/>
+            <enumeration value="&quot;живая&quot; музыка"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="number_of_dancers">
+        <restriction base="string">
+            <enumeration value="парный"/>
+            <enumeration value="сольный"/>
+            <enumeration value="массовый"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="number">
+        <restriction base="ID">
+            <pattern value="n.[1-9][0-9]*"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="type">
+        <restriction base="string">
+            <enumeration value="бальный"/>
+            <enumeration value="народный"/>
+            <enumeration value="эстрадный"/>
+            <enumeration value="восточный"/>
+            <enumeration value="уличный"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="scene">
+        <restriction base="string">
+            <enumeration value="актовый зал"/>
+            <enumeration value="уличная площадка"/>
+            <enumeration value="телестудия"/>
+            <enumeration value="стадион"/>
+        </restriction>
+    </simpleType>
+
+</schema>

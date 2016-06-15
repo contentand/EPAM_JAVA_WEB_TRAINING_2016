@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.daniilyurov.com/training/project/xml/dancer"
+        xmlns:tns="http://www.daniilyurov.com/training/project/xml/dancer"
+        elementFormDefault="qualified">
+
+    <xsd:element name="dancers" type="tns:dancersType" />
+
+
+    <xsd:complexType name="dancersType">
+        <xsd:sequence>
+            <xsd:element name="dancer" type="tns:dancer" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="groupName" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="dancer">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="age" type="tns:age"/>
+            <xsd:element name="years" type="xsd:positiveInteger"/>
+            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="age">
+        <xsd:restriction base="xsd:integer">
+            <xsd:maxInclusive value="150"/>
+            <xsd:minInclusive value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
