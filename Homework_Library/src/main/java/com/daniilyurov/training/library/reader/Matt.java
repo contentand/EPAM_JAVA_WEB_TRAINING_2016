@@ -1,7 +1,6 @@
 package com.daniilyurov.training.library.reader;
 
-import com.daniilyurov.training.library.reader.Reader;
-
+import static com.daniilyurov.training.library.library.Library.BookTitle.*;
 public class Matt extends Reader {
     public Matt() {
         setName("Matt");
@@ -9,24 +8,21 @@ public class Matt extends Reader {
 
     @Override
     public void run() {
-        try {
-            boolean took = false;
-            while (!took) {
-                Thread.sleep(400);
-                took = tryToGetBook("War and Peace", READ_AT_HOME);
-            }
-            Thread.sleep(1000);
-            returnBook("War and Peace");
 
-            took = false;
-            while (!took) {
-                Thread.sleep(4);
-                took = tryToGetBook("Effective Java", READ_IN_THE_LIBRARY);
-            }
-            Thread.sleep(50);
-            returnBook("Effective Java");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        getBook(CONCURRENCY_IN_PRACTICE, READ_AT_HOME);
+        read(300, CONCURRENCY_IN_PRACTICE);
+
+        getBook(EFFECTIVE_JAVA, READ_IN_THE_LIBRARY);
+        read(20, EFFECTIVE_JAVA);
+        returnBook(EFFECTIVE_JAVA);
+
+        read(100, CONCURRENCY_IN_PRACTICE);
+
+        returnBook(CONCURRENCY_IN_PRACTICE);
+
+        getBook(WAR_AND_PEACE, READ_IN_THE_LIBRARY);
+        read(10, WAR_AND_PEACE);
+        returnBook(WAR_AND_PEACE);
+
     }
 }

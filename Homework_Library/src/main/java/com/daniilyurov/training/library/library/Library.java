@@ -5,46 +5,46 @@ import java.util.Map;
 
 public class Library {
 
-    private Map<String, Book> entitiesAvailable;
-    private Map<String, Book> entitiesTaken;
+    private Map<BookTitle, Book> entities;
 
     private static final Library instance = new Library();
 
     private Library() {
-        entitiesTaken = new HashMap<>();
-        entitiesAvailable = new HashMap<>();
-        entitiesAvailable.put("War and Peace", new Book("War and Peace"));
-        entitiesAvailable.put("Effective Java", new Book("Effective Java"));
-        entitiesAvailable.put("Concurrency in Practice", new Book("Concurrency in Practice"));
-        entitiesAvailable.put("Anna Karenina", new Book("Anna Karenina"));
+        entities = new HashMap<>();
+        entities.put(BookTitle.WAR_AND_PEACE, new Book(BookTitle.WAR_AND_PEACE.name));
+        entities.put(BookTitle.EFFECTIVE_JAVA, new Book(BookTitle.EFFECTIVE_JAVA.name));
+        entities.put(BookTitle.CONCURRENCY_IN_PRACTICE, new Book(BookTitle.CONCURRENCY_IN_PRACTICE.name));
+        entities.put(BookTitle.ANNA_KARENINA, new Book(BookTitle.ANNA_KARENINA.name));
+    }
+
+    public enum BookTitle {
+        WAR_AND_PEACE("War and Peace"),
+        EFFECTIVE_JAVA("Effective Java"),
+        CONCURRENCY_IN_PRACTICE("Concurrency in Practice"),
+        ANNA_KARENINA("Anna Karenina");
+
+        public String name;
+        private BookTitle(String name) {
+            this.name = name;
+        }
     }
 
     public static Library getInstance() {
         return instance;
     }
 
-    public synchronized Book get(String name, boolean home) throws BookAlreadyTakenException {
-        Book book = entitiesAvailable.remove(name);
+    public Book get(BookTitle name, boolean home) throws BookAlreadyTakenException, InterruptedException {
+        Book book = entities.get(name);
         if (book == null) {
-            Book takenEntity = entitiesTaken.get(name);
-            if (takenEntity == null) {
                 throw new IllegalArgumentException("No such book exists");
-            } else {
-                String holder = takenEntity.getHolderName();
-                String location = (takenEntity.isAway()) ? "at home" : "in the library";
-                throw new BookAlreadyTakenException(holder + " took " + name + " to read it " + location);
-            }
         }
         if (home) book.takeHome();
         else book.takeToRead();
-        entitiesTaken.put(book.getName(), book);
         return book;
     }
 
-    public synchronized void bringBack(Book book) {
+    public void bringBack(Book book) {
         book.bringBack();
-        entitiesAvailable.put(book.getName(), book);
-        entitiesTaken.remove(book.getName());
     }
 
 }

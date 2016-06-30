@@ -1,5 +1,7 @@
 package com.daniilyurov.training.library.reader;
 
+import static com.daniilyurov.training.library.library.Library.BookTitle.*;
+
 public class Vanya extends Reader{
 
     public Vanya() {
@@ -8,24 +10,18 @@ public class Vanya extends Reader{
 
     @Override
     public void run() {
-        try {
-            boolean took = false;
-            while (!took) {
-                Thread.sleep(400);
-                took = tryToGetBook("War and Peace", READ_AT_HOME);
-            }
-            Thread.sleep(1000);
-            returnBook("War and Peace");
+        getBook(CONCURRENCY_IN_PRACTICE, READ_IN_THE_LIBRARY);
+        read(40, CONCURRENCY_IN_PRACTICE);
+        returnBook(CONCURRENCY_IN_PRACTICE);
 
-            took = false;
-            while (!took) {
-                Thread.sleep(4);
-                took = tryToGetBook("Effective Java", READ_IN_THE_LIBRARY);
-            }
-            Thread.sleep(50);
-            returnBook("Effective Java");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        getBook(EFFECTIVE_JAVA, READ_IN_THE_LIBRARY);
+        read(20, EFFECTIVE_JAVA);
+        returnBook(EFFECTIVE_JAVA);
+
+        getBook(ANNA_KARENINA, READ_IN_THE_LIBRARY);
+        getBook(WAR_AND_PEACE, READ_IN_THE_LIBRARY);
+        read(30, ANNA_KARENINA, WAR_AND_PEACE);
+        returnBook(ANNA_KARENINA);
+        returnBook(WAR_AND_PEACE);
     }
 }

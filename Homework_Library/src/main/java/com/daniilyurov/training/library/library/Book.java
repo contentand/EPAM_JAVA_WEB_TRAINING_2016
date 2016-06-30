@@ -28,17 +28,24 @@ public class Book {
         return bookName;
     }
 
-    protected void takeHome() {
+    protected synchronized void takeHome() throws InterruptedException {
+        if (holder != null) {
+            wait();
+        }
         this.holder = (Reader) Thread.currentThread();
         this.isOutsideTheBuilding = true;
     }
 
-    protected void takeToRead() {
+    protected synchronized void takeToRead() throws InterruptedException {
+        if (holder != null) {
+            wait();
+        }
         this.holder = (Reader) Thread.currentThread();
     }
 
-    protected void bringBack() {
+    protected synchronized void bringBack() {
         this.holder = null;
         this.isOutsideTheBuilding = false;
+        notify();
     }
 }
