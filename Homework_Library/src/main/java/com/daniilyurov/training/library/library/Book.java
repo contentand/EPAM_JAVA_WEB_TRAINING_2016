@@ -29,7 +29,7 @@ public class Book {
     }
 
     protected synchronized void takeHome() throws InterruptedException {
-        if (holder != null) {
+        while (holder != null) {
             wait();
         }
         this.holder = (Reader) Thread.currentThread();
@@ -37,7 +37,7 @@ public class Book {
     }
 
     protected synchronized void takeToRead() throws InterruptedException {
-        if (holder != null) {
+        while (holder != null) {
             wait();
         }
         this.holder = (Reader) Thread.currentThread();

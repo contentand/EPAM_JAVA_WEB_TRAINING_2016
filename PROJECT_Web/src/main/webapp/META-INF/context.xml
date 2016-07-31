@@ -1,0 +1,17 @@
+
+<Context antiJARLocking="true" path="/University">
+
+    <Resource
+            name="jdbc/university"
+            author="Container"
+            type="javax.sql.DataSource"
+            maxActive="30"
+            maxIdle="10"
+            maxWait="10000"
+            username="root"
+            password="1234"
+            driverClassName="com.mysql.jdbc.Driver"
+            url="jdbc:mysql://localhost:3306/project4?useSSL=false"
+    />
+
+</Context>

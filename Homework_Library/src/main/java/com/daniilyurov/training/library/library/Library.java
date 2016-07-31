@@ -24,7 +24,7 @@ public class Library {
         ANNA_KARENINA("Anna Karenina");
 
         public String name;
-        private BookTitle(String name) {
+        BookTitle(String name) {
             this.name = name;
         }
     }

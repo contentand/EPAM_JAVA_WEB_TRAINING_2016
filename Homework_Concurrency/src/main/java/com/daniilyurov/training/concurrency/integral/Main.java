@@ -5,6 +5,8 @@ package com.daniilyurov.training.concurrency.integral;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.println(OptimalThreadCountFounder.getOptimalThreadCount(new DefinedIntegralCalculator(x -> x, -5, 5, 10)));
+
+        System.out.println(
+                OptimalThreadCountFounder.getOptimalThreadCount(new DefinedIntegralCalculator(x -> x, -5, 5, 10)));
     }
 }

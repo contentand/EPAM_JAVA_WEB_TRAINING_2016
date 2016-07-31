@@ -1,0 +1,249 @@
+@keyframes disappearing {
+    10% {background: white;top:60px;}
+    20% {background: aquamarine;top:60px;}
+    55% {background: aquamarine;top:60px;opacity: 1;max-height: 600px;}
+    100% {max-height: 0px;top:0px;background: white; opacity: 0;}
+}
+
+@keyframes sparkle {
+    to {background: white;}
+}
+
+.applicants-list {
+    float:left;
+    padding: 0 50px;
+    text-align: center;
+}
+
+#content {
+    padding: 0px 60px;
+
+}
+
+.login {
+    margin-left: 150px;
+    padding: 30px;
+    background: white;
+    box-shadow: -3px 4px 25px rgba(37, 37, 37, 0.74);
+    width: 500px;
+}
+
+.delete {
+    cursor: pointer;
+    padding: 2px;
+    background: rgba(255, 187, 185, 0.14);
+    color: #a8524d;
+}
+
+.delete:hover {
+    background: rgba(255, 187, 185, 0.39);
+    border-radius: 30px;
+}
+
+.container {
+    width: 700px;
+    background: white;
+    margin-left: 150px;
+    padding: 30px;
+    box-shadow: 5px 5px 20px gray;
+}
+
+.subject * {
+    padding: 0 5px;
+}
+
+.faculty {
+    background: rgba(47, 255, 197, 0.95);
+    margin: 30px 50px;
+    font-family: "Cambria Math";
+    display: flex;
+    box-shadow: 3px 3px 40px rgba(116, 132, 116, 0.41);
+    transition: box-shadow .3s;
+}
+
+.faculty:hover {
+    transition: box-shadow .3s;
+
+    box-shadow: 2px 10px 40px #748474;
+}
+
+.faculty .overall-info {
+    width: 300px;
+    padding: 10px 30px;
+}
+
+.faculty .overall-info h3 {
+    text-transform: uppercase;
+    color: #84805e;
+    text-align: center;
+    text-shadow: 2px 2px 5px #64d0b5, 1px 1px #ffffff;
+}
+
+.faculty .faculty-image {
+    flex-grow: 1;
+    background: #f7f7f7;
+}
+
+.faculty .registration-info{
+    background: orangered;
+    width: 300px;
+    padding: 30px 30px;
+    text-align: center;
+}
+
+.faculty .registration-info .info{
+    text-align: center;
+    padding: 10px 2px 5px 2px;
+}
+
+.faculty .registration-details table tr td:nth-child(1) {
+    text-align: right;
+    font-weight: bold;
+}
+
+.faculty .registration-info .btn{
+    margin: 20px;
+}
+
+.requirements {
+    font-weight: bold;
+    color: #3a3a3a;
+}
+
+.faculty .subject {
+    display: inline-block;
+    padding: 5px;
+    background: rgba(249, 249, 249, 1);
+    border-radius: 5px;
+}
+
+body {
+    margin: 0px;
+
+    background: #1D976C; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #1D976C , #93F9B9); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, rgba(182, 184, 184, 0.98) , #d7d7d7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    background-position-x: -50px;
+}
+
+#top-offset {
+    height: 70px;
+}
+
+#notifier {
+    overflow: hidden;
+    background: aquamarine;
+    max-height: 600px;
+    animation-name: disappearing;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+    position: absolute;
+    top:60px;
+    width: 100%;
+    text-align: center;
+}
+
+.sparkling {
+    animation-name: sparkle;
+    animation-duration: 3s;
+    animation-direction: alternate;
+}
+
+header {
+    background: #19c0c0;
+    width: 100%;
+    display: inline-block;
+    position: fixed;
+}
+
+header * {
+    display: inline;
+    text-transform: uppercase;
+}
+
+.left-navigation {
+    float: left;
+}
+
+.right-navigation {
+    float: right;
+}
+
+
+
+header .header-element {
+    float: left;
+    border: none;
+    background: #21b5ba;
+    cursor: pointer;
+    font-size: 20px;
+    text-decoration: none;
+    color: #e4ffff;
+    padding: 20px 20px;
+    font-family: "Cambria Math";
+}
+
+header .unselected-header-element {
+    background: rgb(51, 166, 166);
+    color: #e7ff25;
+    cursor: default;
+}
+
+header .important-header-element{
+    background: #797877;
+    color: #6efaff;
+}
+
+header .header-element:hover {
+    background: #135c4e;
+}
+
+header .unselected-header-element:hover {
+    background: rgb(51, 166, 166);
+    color: #e7ff25;
+}
+
+.btn {
+    border: none;
+    padding: 10px 20px;
+    background: lightgrey;
+    font-family: "Cambria Math";
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.action-start {
+    background: #25f251;
+    color: black;
+}
+
+.action-start:hover {
+    background: greenyellow;
+}
+
+.action-stop {
+    background: black;
+    color: white;
+}
+
+.action-stop:hover {
+    background:#763434;
+    color:rgb(255, 201, 0);
+}
+
+.small-btn {
+    border: none;
+    background:cadetblue;
+    color:white;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.small-btn:hover {
+    background: black;
+}

@@ -23,9 +23,11 @@ public class ConcurrentSum {
     private static void addInAThread(final Result result, int ... values) {
 
         Thread th = new Thread(() -> {
+            int sum = 0;
             for (int value : values) {
-                result.add(value);
+                sum += value;
             }
+            result.add(sum);
         });
 
         th.start();
