@@ -6,13 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class provides basic request wrapping for HttpServletRequest.
- * It has basic methods needed by business logic
  */
 public class HttpServletRequestWrapper implements Request {
 
     private HttpServletRequest request;
 
-    public HttpServletRequestWrapper(HttpServletRequest request) {
+    public HttpServletRequestWrapper(HttpServletRequest request) throws NullPointerException {
         if (request == null) throw new NullPointerException();
         this.request = request;
     }

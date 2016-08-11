@@ -58,7 +58,7 @@ public class FrontControllerTest {
                 case "REJECT": return req -> "LOGIN"; // command redirects
                 case "INFO": return req -> "INFO"; // command lets the request through
                 case "APPLICANT": return req -> "APPLICANT"; // command lets the request through
-                case "LANG": return req -> null; // commands doesn't care
+                case "LANG": return req -> null; // command doesn't care
                 default: return req -> "505";
             }
         };
