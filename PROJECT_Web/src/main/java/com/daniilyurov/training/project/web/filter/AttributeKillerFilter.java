@@ -26,26 +26,40 @@ public class AttributeKillerFilter extends HttpFilter {
     static Logger logger = Logger.getLogger(AttributeKillerFilter.class);
 
     @Override
-    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         chain.doFilter(request, response);
 
         logger.debug("Removing non-core session attributes for request: |"
                 + request.getMethod() + "| " + request.getRequestURI());
 
-        // RESETTING ATTRIBUTES
-        if (request.getMethod().equals("GET")) {
+        if (isGet(request)) {
             HttpSession session = request.getSession();
             Enumeration<String> attributes = session.getAttributeNames();
-            while (attributes.hasMoreElements()) {
-                String attribute = attributes.nextElement();
-                if (!CORE_SESSION_ATTRIBUTES.contains(attribute)) {
-                    logger.debug("- Removing session attribute: " + attribute);
-                    session.removeAttribute(attribute);
-                }
-            }
+            cleanUp(attributes, session);
         }
 
         logger.debug("Done.");
+    }
+
+    // Private helper methods are listed below
+
+    private boolean isGet(HttpServletRequest request) {
+        return request.getMethod().equals("GET");
+    }
+
+    private void cleanUp(Enumeration<String> attributeNames, HttpSession session) {
+        while (attributeNames.hasMoreElements()) {
+            String attribute = attributeNames.nextElement();
+            if (!isCore(attribute)) {
+                logger.debug("- Removing session attribute: " + attribute);
+                session.removeAttribute(attribute);
+            }
+        }
+    }
+
+    private boolean isCore(String attribute) {
+        return CORE_SESSION_ATTRIBUTES.contains(attribute);
     }
 }
