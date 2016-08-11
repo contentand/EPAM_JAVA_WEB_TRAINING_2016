@@ -44,7 +44,7 @@
     
     <servlet>
         <servlet-name>FrontController</servlet-name>
-        <servlet-class>com.daniilyurov.training.project.web.controller.Controller</servlet-class>
+        <servlet-class>com.daniilyurov.training.project.web.controller.FrontController</servlet-class>
     </servlet>
 
     <servlet-mapping>

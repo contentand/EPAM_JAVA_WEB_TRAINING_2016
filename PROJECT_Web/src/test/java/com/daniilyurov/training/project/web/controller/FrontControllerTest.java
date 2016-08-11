@@ -20,7 +20,7 @@ import static com.daniilyurov.training.project.web.utility.RequestParameters.PAR
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class ControllerTest {
+public class FrontControllerTest {
 
     private static Properties urlMapping;
     private static Properties jspMapping;
@@ -64,8 +64,8 @@ public class ControllerTest {
         };
     }
 
-    public ControllerTest(String method, String url, String afterProcessDestinationPath,
-                          String expectedRedirect, String expectedForward) {
+    public FrontControllerTest(String method, String url, String afterProcessDestinationPath,
+                               String expectedRedirect, String expectedForward) {
 
         MockServletContext servletContext = new MockServletContext();
         servletContext.setAttribute(URL_MAPPING, urlMapping); // placing pseudo url-mapping into pseudo context
@@ -99,7 +99,7 @@ public class ControllerTest {
 
     @Test
     public void test() throws Exception {
-        new Controller().service(request, response);
+        new FrontController().service(request, response);
         assertEquals("forward match", expectedForward, response.getForwardedUrl());
         assertEquals("redirect match", expectedRedirect, response.getRedirectedUrl());
     }

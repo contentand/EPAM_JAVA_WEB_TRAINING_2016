@@ -4,7 +4,6 @@ import com.daniilyurov.training.project.web.model.business.api.Command;
 import com.daniilyurov.training.project.web.model.business.api.CommandFactory;
 import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.utility.SessionAttributes;
-import org.apache.log4j.Logger;
 
 import static com.daniilyurov.training.project.web.utility.ContextAttributes.*;
 import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
@@ -26,9 +25,7 @@ import java.util.Properties;
  *
  * @author Daniil Yurov
  */
-public class Controller extends HttpServlet {
-
-    static Logger logger = Logger.getLogger(Controller.class);
+public class FrontController extends HttpServlet {
 
     @Override
     public String getServletInfo() {
@@ -58,41 +55,43 @@ public class Controller extends HttpServlet {
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String requestedView = new IntentParser().getIntent(request);
-        logger.debug("Parsed client intent : " + requestedView);
+        // Get request key from the Url
+        String requestKey = new RequestKeyMapper().getRequestKey(request);
 
-        ServletContext application = request.getServletContext();
-        CommandFactory factory = (CommandFactory) application.getAttribute(ACTION_COMMAND_FACTORY);
+        // Get command corresponding to the request key
+        ServletContext context = request.getServletContext();
+        CommandFactory factory = (CommandFactory) context.getAttribute(ACTION_COMMAND_FACTORY);
+        Command command = factory.defineCommand(requestKey);
 
-        Command command = factory.defineCommand(requestedView);
-
+        // Get response key from the command
         Request wrappedRequest = new HttpServletRequestWrapper(request);
-        String responseView = command.execute(wrappedRequest);
-        logger.debug("Executed command.");
-        logger.debug("Command returned intent : " + requestedView);
+        String responseKey = command.execute(wrappedRequest);
 
-        new Dispatcher(request,response,requestedView,responseView).dispatch();
+        // Dispatch to the final destination
+        new Dispatcher(request,response,requestKey,responseKey).dispatch();
     }
 
 
     /**
-     * A utility abstract class that contains fields and methods
-     * shared by IntentParser and Dispatcher.
+     * A utility class that contains fields and methods
+     * shared by RequestKeyMapper and Dispatcher.
      * The sole purpose is to avoid code repetition.
-     *
-     * Declared abstract to prevent inadvertent instantiation.
      *
      * @author Daniil Yurov
      */
-    private abstract class RequestHolder {
-        protected HttpServletRequest request;
+    private static class MappingProvider {
+        private ServletContext context;
 
-        protected Properties getUrlMapping() {
-            return (Properties) request.getServletContext().getAttribute(URL_MAPPING);
+        MappingProvider(HttpServletRequest request) {
+            this.context = request.getServletContext();
         }
 
-        protected Properties getJspMapping() {
-            return (Properties) request.getServletContext().getAttribute(JSP_MAPPING);
+        public Properties getUrlMapping() {
+            return (Properties) context.getAttribute(URL_MAPPING);
+        }
+
+        public Properties getJspMapping() {
+            return (Properties) context.getAttribute(JSP_MAPPING);
         }
     }
 
@@ -102,8 +101,9 @@ public class Controller extends HttpServlet {
      *
      * @author Daniil Yurov
      */
-    private final class IntentParser extends RequestHolder {
+    private static final class RequestKeyMapper {
 
+        private MappingProvider provider;
         private String method;
         private String path;
 
@@ -115,20 +115,20 @@ public class Controller extends HttpServlet {
          * @param request user's request instance to analyze
          * @return a string representing user's Intent or null if the Intent is not recognized
          */
-        String getIntent(HttpServletRequest request) {
-            this.request = request;
+        String getRequestKey(HttpServletRequest request) {
+            this.provider = new MappingProvider(request);
             this.method = request.getMethod();
             this.path = request.getPathInfo();
 
             String urlPattern = formUrlPattern();
-            return getIntent(urlPattern);
+            return getRequestKey(urlPattern);
         }
 
-        // private helper methods are listed below
+        // Private helper methods are listed below
 
         // locates what constant corresponds to the url pattern using url-mapping file
-        private String getIntent(String urlPattern) {
-            Properties urlMapping = getUrlMapping();
+        private String getRequestKey(String urlPattern) {
+            Properties urlMapping = provider.getUrlMapping();
             return urlMapping.getProperty(urlPattern);
         }
 
@@ -157,12 +157,14 @@ public class Controller extends HttpServlet {
      * The purpose of the class is to encapsulate method
      * that determines whether there should be forward or redirect.
      * It identifies which jsp to forward to or which url
-     * to redirect to. And it performs the forward/redirect.
+     * to redirect to. It eventually performs the forward/redirect.
      *
      * @author Daniil Yurov
      */
-    private final class Dispatcher extends RequestHolder{
+    private static final class Dispatcher {
 
+        private MappingProvider provider;
+        private HttpServletRequest request;
         private HttpServletResponse response;
         private String requestedView;
         private String responseView;
@@ -170,6 +172,7 @@ public class Controller extends HttpServlet {
 
         Dispatcher(HttpServletRequest request, HttpServletResponse response,
                    String requestedView, String responseView) {
+            this.provider = new MappingProvider(request);
             this.request = request;
             this.response = response;
             this.requestedView = requestedView;
@@ -192,10 +195,8 @@ public class Controller extends HttpServlet {
          */
         void dispatch() throws IOException, ServletException {
             if (responseView != null && responseView.equals(requestedView)) {
-                logger.debug("Intents match! : " + requestedView + " == " + responseView);
                 forwardToAppropriateJsp();
             } else {
-                logger.debug("Intents do not match! : " + requestedView + " != " + responseView);
                 redirectToAppropriatePath();
             }
         }
@@ -203,10 +204,8 @@ public class Controller extends HttpServlet {
         // private helper methods are listed below
 
         private void forwardToAppropriateJsp() throws IOException, ServletException {
-            Properties jspMapping = getJspMapping();
+            Properties jspMapping = provider.getJspMapping();
             String viewPath = jspMapping.getProperty(responseView);
-
-            logger.debug("So forwarding to : " + viewPath);
 
             request.getRequestDispatcher(viewPath).forward(request, response);
         }
@@ -222,7 +221,6 @@ public class Controller extends HttpServlet {
         }
 
         private void takePathFromRequestParameter() {
-            logger.debug("Redirecting to url user indicated in parameter");
             String destinationPath = request.getParameter(PARAMETER_AFTER_PROCESS_DESTINATION_PATH);
             Optional<String> parameter = Optional.ofNullable(destinationPath);
             destination = parameter.orElseThrow(IllegalStateException::new);
@@ -243,14 +241,13 @@ public class Controller extends HttpServlet {
         // finds urlPattern matching response view in the UrlMapping
         // and transforms it into normal url
         private void mapResponseToPathUsingUrlMapping() {
-            Properties urlMapping = getUrlMapping();
+            Properties urlMapping = provider.getUrlMapping();
             String urlPattern = (String) urlMapping.entrySet().stream()
                     .filter(entry -> entry.getValue().equals(responseView))
                     .findFirst()
                     .orElseThrow(IllegalStateException::new)
                     .getKey();
             destination = removeMethodFromPattern(urlPattern);
-            logger.debug("Redirecting to mapped destination -> " + destination);
         }
 
         // For example: [GET]/login -> /login
