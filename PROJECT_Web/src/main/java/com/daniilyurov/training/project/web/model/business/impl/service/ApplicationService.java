@@ -1,11 +1,10 @@
 package com.daniilyurov.training.project.web.model.business.impl.service;
 
 
-import com.daniilyurov.training.project.web.model.business.api.Service;
 import com.daniilyurov.training.project.web.model.business.impl.output.ApplicantInfoItem;
 import com.daniilyurov.training.project.web.model.business.impl.output.ApplicationInfoItemComparator;
 import com.daniilyurov.training.project.web.model.business.impl.output.FacultyInfoItem;
-import com.daniilyurov.training.project.web.model.business.impl.tool.LocalizationTool;
+import com.daniilyurov.training.project.web.model.business.impl.tool.Localize;
 import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
 import com.daniilyurov.training.project.web.model.dao.api.entity.*;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
@@ -15,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class ApplicationService implements Service {
+public class ApplicationService {
 
     protected RepositoryTool repository;
 
@@ -41,6 +40,19 @@ public class ApplicationService implements Service {
             facultyInfoItem.setApplicationIdForCurrentSelection(latestApplicationOfUser.getId());
         }
 
+    }
+
+    public long countAllOf(Long userId, Application.Status status) throws DaoException {
+        return repository.getAutoCommittalApplicationRepository()
+                .countAllOf(userId, status);
+    }
+
+    public Application getById(Long id) throws DaoException {
+        return repository.getAutoCommittalApplicationRepository().getById(id);
+    }
+
+    public Application[] getAllOf(User user) throws DaoException {
+        return repository.getAutoCommittalApplicationRepository().getAllOf(user);
     }
 
     // Private helper methods are listed below
@@ -72,7 +84,7 @@ public class ApplicationService implements Service {
 
 
 
-    public int acceptBestAndRejectOthers(Faculty faculty, LocalizationTool localization) throws DaoException {
+    public int acceptBestAndRejectOthers(Faculty faculty, Localize localization) throws DaoException {
         // get all applicants sorted by score
         TreeSet<ApplicantInfoItem> appliedApplicants = getAppliedApplicants(faculty, localization);
         return selectBestAndRejectOthers(appliedApplicants, faculty);
@@ -112,7 +124,7 @@ public class ApplicationService implements Service {
         repository.getAutoCommittalApplicationRepository().updateAll(applicationIds, status);
     }
 
-    private TreeSet<ApplicantInfoItem> getAppliedApplicants(Faculty faculty, LocalizationTool localization)
+    private TreeSet<ApplicantInfoItem> getAppliedApplicants(Faculty faculty, Localize localization)
             throws DaoException {
 
         Applicants applicants = collectApplicants(faculty, localization);
@@ -137,7 +149,7 @@ public class ApplicationService implements Service {
         }
     }
 
-    public Applicants collectApplicants(Faculty faculty, LocalizationTool localization) throws DaoException {
+    public Applicants collectApplicants(Faculty faculty, Localize localization) throws DaoException {
 
         Applicants applicants = new Applicants();
 

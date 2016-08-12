@@ -1,29 +1,27 @@
 package com.daniilyurov.training.project.web.model.business.impl.command;
 
 import com.daniilyurov.training.project.web.i18n.Value;
-import com.daniilyurov.training.project.web.model.business.api.Provider;
+import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.impl.service.ApplicationService;
-import com.daniilyurov.training.project.web.model.business.impl.tool.LocalizationTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ApplicationValidator;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ValidationException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
-import static com.daniilyurov.training.project.web.model.business.impl.Intent.GET_MAIN_PAGE;
-import static com.daniilyurov.training.project.web.model.business.impl.Intent.REDIRECT_TO_WHERE_HE_CAME_FROM;
+import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
+import static com.daniilyurov.training.project.web.model.business.impl.Key.REDIRECT_TO_WHERE_HE_CAME_FROM;
 
 public class DoConsiderApplication extends AbstractAdminOnlyCommand {
 
 
     @Override
-    protected String executeAsAdministrator(Provider provider) throws Exception {
+    protected String executeAsAdministrator(Request request) throws Exception {
 
         // setup dependencies
-        ApplicationValidator applicationValidator = provider.getApplicationValidator();
-        ApplicationService applicationService = provider.getApplicationService();
-        OutputTool output = provider.getOutputTool();
-        LocalizationTool localization = provider.getLocalizationTool();
+        ApplicationValidator applicationValidator = validatorFactory.getApplicationValidator(request);
+        ApplicationService applicationService = servicesFactory.getApplicationService();
+        OutputTool output = outputToolFactory.getInstance(request);
 
         try {
             // retrieving application

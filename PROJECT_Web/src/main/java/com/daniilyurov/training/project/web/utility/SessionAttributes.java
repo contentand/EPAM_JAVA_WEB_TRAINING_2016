@@ -14,8 +14,8 @@ public interface SessionAttributes {
     String BUNDLE = "bundle";
     String LOCALE = "locale";
     String USER_ID = "userId";
-    String AUTHORITY = "authority"; // role
-    String CSRF_TOKEN_SERVER = "csrfTokenServer"; // to be placed into session, to be r
+    String ROLE = "authority";
+    String CSRF_TOKEN_SERVER = "csrfTokenServer";
 
     String CSRF_TOKEN = "csrfToken";
     String ATTRIBUTE_MSG = "msg";
@@ -38,7 +38,7 @@ public interface SessionAttributes {
     String ATTRIBUTE_USER_INFO = "user";
 
     Set<String> CORE_SESSION_ATTRIBUTES = new HashSet<String>() {{
-        addAll(Arrays.asList(BUNDLE, LOCALE, USER_ID, AUTHORITY, CSRF_TOKEN_SERVER));
+        addAll(Arrays.asList(BUNDLE, LOCALE, USER_ID, ROLE, CSRF_TOKEN_SERVER));
     }};
 
 }

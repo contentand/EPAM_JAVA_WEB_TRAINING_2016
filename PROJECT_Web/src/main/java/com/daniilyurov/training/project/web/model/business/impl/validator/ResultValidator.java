@@ -1,10 +1,8 @@
 package com.daniilyurov.training.project.web.model.business.impl.validator;
 
-import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.impl.tool.InputTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
-import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
-import com.daniilyurov.training.project.web.model.business.impl.tool.SessionManager;
+import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Result;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Subject;
@@ -21,20 +19,18 @@ import static com.daniilyurov.training.project.web.i18n.Value.*;
 public class ResultValidator extends AbstractValidator {
 
     protected InputTool input;
-    protected SessionManager management;
-    protected RepositoryTool repository;
+    protected ServicesFactory servicesFactory;
 
-    public ResultValidator(Request request, RepositoryTool repository) {
-        this.output = new OutputTool(request);
-        this.repository = repository;
-        this.input = new InputTool(request);
-        this.management = new SessionManager(request);
+    public ResultValidator(InputTool input, OutputTool output, ServicesFactory servicesFactory) {
+        this.output = output;
+        this.input = input;
+        this.servicesFactory = servicesFactory;
     }
 
     public Set<Result> parseResultsForUser(User user) throws ValidationException, DaoException {
         Set<Result> newUserResults = new LinkedHashSet<>();
 
-        Subject[] allSubjects = repository.getAutoCommittalSubjectRepository().getAll();
+        Subject[] allSubjects = servicesFactory.getSubjectService().getAll();
         Stream.of(allSubjects).forEach(subject -> {
             String subjectResultToParse = input.getParameter(PREFIX_PARAMETER_SUBJECT_ID + subject.getId());
             if (subjectResultToParse != null) {

@@ -19,21 +19,10 @@ import static org.junit.Assert.*;
  * Should replace <,> with &lt; and &gt;
  * And then continue the chain.
  */
-public class XssProtectionFilterTest extends Mockito {
-
-    HttpServletRequest request;
-    HttpServletResponse response;
-    FilterChain filterChain;
-
-    @Before
-    public void setup() {
-        this.request = mock(HttpServletRequest.class);
-        this.response = mock(HttpServletResponse.class);
-        this.filterChain = mock(FilterChain.class);
-    }
+public class XssProtectionFilterTest extends AbstractFilter {
 
     @Test // should replace <,> with &lt; and &gt;
-    public void shouldReplaceXmlCharactersWithEscapes() throws Exception {
+    public void always_replacesXmlCharactersWithEscapes() throws Exception {
 
         // setup
         Map<String, String[]> maliciousParameters = new HashMap<>();
@@ -47,7 +36,7 @@ public class XssProtectionFilterTest extends Mockito {
         when(request.getParameterMap()).thenReturn(maliciousParameters);
 
         // execution
-        new XssProtectionFilter().doFilter(request, response, filterChain);
+        new XssProtectionFilter().doFilter(request, response, chain);
 
         // verification
         expectedEscapedParams.keySet().forEach(key -> {
@@ -56,15 +45,15 @@ public class XssProtectionFilterTest extends Mockito {
     }
 
     @Test
-    public void shouldCallFilterChainToContinue() throws Exception {
-        new XssProtectionFilter().doFilter(request, response, filterChain);
-        verify(filterChain, times(1)).doFilter(eq(request), eq(response));
-        verifyNoMoreInteractions(filterChain);
+    public void always_callsFilterChainToContinue() throws Exception {
+        new XssProtectionFilter().doFilter(request, response, chain);
+        verify(chain, times(1)).doFilter(eq(request), eq(response));
+        verifyNoMoreInteractions(chain);
     }
 
     @Test
-    public void shouldNotTouchHttpServletResponse() throws Exception {
-        new XssProtectionFilter().doFilter(request, response, filterChain);
+    public void always_doesNotTouchHttpServletResponse() throws Exception {
+        new XssProtectionFilter().doFilter(request, response, chain);
         verifyZeroInteractions(response);
     }
 

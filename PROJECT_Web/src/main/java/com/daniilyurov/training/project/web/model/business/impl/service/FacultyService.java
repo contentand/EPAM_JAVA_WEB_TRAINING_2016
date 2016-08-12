@@ -1,8 +1,7 @@
 package com.daniilyurov.training.project.web.model.business.impl.service;
 
-import com.daniilyurov.training.project.web.model.business.api.Service;
 import com.daniilyurov.training.project.web.model.business.impl.output.FacultyInfoItem;
-import com.daniilyurov.training.project.web.model.business.impl.tool.LocalizationTool;
+import com.daniilyurov.training.project.web.model.business.impl.tool.Localize;
 import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
@@ -12,7 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 
-public class FacultyService implements Service {
+public class FacultyService {
 
     protected RepositoryTool repositoryTool;
 
@@ -43,7 +42,7 @@ public class FacultyService implements Service {
                 .countAllOf(faculty, Application.Status.APPLIED);
     }
 
-    public void fillWithStatistics(FacultyInfoItem facultyInfoItemToFill, Faculty faculty, LocalizationTool lt)
+    public void fillWithStatistics(FacultyInfoItem facultyInfoItemToFill, Faculty faculty, Localize lt)
             throws DaoException {
 
         // gathering statistics
@@ -75,7 +74,7 @@ public class FacultyService implements Service {
 
 
     public Set<FacultyInfoItem> getSetOfFacultyInfo(ApplicationService applicationService,
-                                                    LocalizationTool localizationTool,
+                                                    Localize localization,
                                                     Long currentUserId) throws DaoException {
 
         // create set of container fo storing output
@@ -85,11 +84,15 @@ public class FacultyService implements Service {
         Faculty[] faculties = getAllFaculties();
         for (Faculty faculty : faculties) {
             FacultyInfoItem facultyInfoItem = new FacultyInfoItem();
-            fillWithStatistics(facultyInfoItem, faculty, localizationTool);
+            fillWithStatistics(facultyInfoItem, faculty, localization);
             applicationService.fillWithStatistics(facultyInfoItem, faculty, currentUserId);
             extendedFaculties.add(facultyInfoItem);
         }
 
         return extendedFaculties;
+    }
+
+    public Faculty getById(Long facultyId) throws DaoException {
+        return repositoryTool.getAutoCommittalFacultyRepository().getById(facultyId);
     }
 }

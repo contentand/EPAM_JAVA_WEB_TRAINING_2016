@@ -1,8 +1,8 @@
 package com.daniilyurov.training.project.web.model.business.impl;
 
 /**
- * This utility interface encapsulates all Intent constants.
- * Intents are strings. They are used as communication medium in:
+ * This utility interface encapsulates all key constants.
+ * Keys are strings. They are used as communication medium between:
  * 1. class-mapping.properties
  * 2. jsp-mapping.properties
  * 3. url-mapping.properties
@@ -15,7 +15,7 @@ package com.daniilyurov.training.project.web.model.business.impl;
  *
  * @author Daniil Yurov
  */
-public interface Intent {
+public interface Key {
     String REDIRECT_TO_WHERE_HE_CAME_FROM = null;
     String EMPTY = "EMPTY";
     String DO_CHANGE_LANGUAGE = "DO_CHANGE_LANGUAGE";

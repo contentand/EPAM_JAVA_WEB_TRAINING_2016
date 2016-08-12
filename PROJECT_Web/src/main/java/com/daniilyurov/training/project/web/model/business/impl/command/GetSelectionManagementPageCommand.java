@@ -1,39 +1,37 @@
 package com.daniilyurov.training.project.web.model.business.impl.command;
 
-import com.daniilyurov.training.project.web.model.business.api.Provider;
+import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.impl.output.FacultyInfoItem;
 import com.daniilyurov.training.project.web.model.business.impl.service.ApplicationService;
 import com.daniilyurov.training.project.web.model.business.impl.service.FacultyService;
-import com.daniilyurov.training.project.web.model.business.impl.tool.LocalizationTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import com.daniilyurov.training.project.web.model.business.impl.validator.FacultyValidator;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
-import static com.daniilyurov.training.project.web.model.business.impl.Intent.*;
+import static com.daniilyurov.training.project.web.model.business.impl.Key.*;
 
 public class GetSelectionManagementPageCommand extends AbstractAdminOnlyCommand {
 
     @Override
-    protected String executeAsAdministrator(Provider provider) throws Exception {
+    protected String executeAsAdministrator(Request request) throws Exception {
 
         // setup dependencies
-        FacultyValidator facultyValidator = provider.getFacultyValidator();
-        FacultyService facultyService = provider.getFacultyService();
-        ApplicationService applicationService = provider.getApplicationService();
-        LocalizationTool localization = provider.getLocalizationTool();
-        OutputTool output = provider.getOutputTool();
+        FacultyValidator facultyValidator = validatorFactory.getFacultyValidator(request);
+        FacultyService facultyService = servicesFactory.getFacultyService();
+        ApplicationService applicationService = servicesFactory.getApplicationService();
+        OutputTool output = outputToolFactory.getInstance(request);
 
         // get faculty
         Faculty faculty = facultyValidator.parseExistingFacultyFromUrl();
 
         // get info about faculty
         FacultyInfoItem facultyInfo = new FacultyInfoItem();
-        facultyService.fillWithStatistics(facultyInfo, faculty, localization);
+        facultyService.fillWithStatistics(facultyInfo, faculty, output);
 
         // get info about applicants
         ApplicationService.Applicants applicants = applicationService
-                .collectApplicants(faculty, localization);
+                .collectApplicants(faculty, output);
 
         // output data
         output.set(ATTRIBUTE_FACULTY, facultyInfo);

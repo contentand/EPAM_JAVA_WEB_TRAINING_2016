@@ -40,7 +40,7 @@ public class CsrfTokenVerificationFilter extends HttpFilter {
 
             if (!expectedToken.equals(actualToken)) {
                 logger.debug("CSRF-TOKEN is invalid!");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
 

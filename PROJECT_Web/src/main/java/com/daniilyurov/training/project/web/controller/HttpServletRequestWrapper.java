@@ -17,11 +17,6 @@ public class HttpServletRequestWrapper implements Request {
     }
 
     @Override
-    public Object getContextAttribute(String key) {
-        return request.getServletContext().getAttribute(key);
-    }
-
-    @Override
     public String[] getParameterValues(String key) {
         return request.getParameterValues(key);
     }

@@ -1,12 +1,15 @@
 package com.daniilyurov.training.project.web.model.business.impl.tool;
 
-import com.daniilyurov.training.project.web.i18n.Translatable;
-import com.daniilyurov.training.project.web.i18n.Value;
+import com.daniilyurov.training.project.web.i18n.*;
 import com.daniilyurov.training.project.web.model.business.api.Request;
+import com.daniilyurov.training.project.web.model.business.api.Role;
+import com.daniilyurov.training.project.web.utility.ContextAttributes;
 
+import static com.daniilyurov.training.project.web.utility.ContextAttributes.LOCALIZER;
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -16,13 +19,15 @@ import java.util.ResourceBundle;
  *
  * Motivation: avoid code repetitions.
  */
-public class OutputTool {
+public class OutputTool implements Localize {
 
     protected Request request;
+    protected Localizer localizer;
 
-    public OutputTool(Request request) {
+    public OutputTool(Request request, Localizer localizer) {
         if (request == null) throw new NullPointerException();
         this.request = request;
+        this.localizer = localizer;
     }
 
     /**
@@ -70,39 +75,74 @@ public class OutputTool {
         request.setSessionAttribute(ATTRIBUTE_MSG_ERROR, previousMsg + currentMsg);
     }
 
-    public void setErrorMsg(Translatable e) { // TODO : DEPRECATE ?
-        String previousMsg = getPrevious(ATTRIBUTE_MSG_ERROR);
-        String currentMsg = translate(e);
-        request.setSessionAttribute(ATTRIBUTE_MSG_ERROR, previousMsg + currentMsg);
-    }
-
     public void set(String attributeName, Object attributeValue) {
         request.setSessionAttribute(attributeName, attributeValue);
     }
+
+    public void setRole(String roleAsString) throws IllegalArgumentException {
+        Role role = Role.valueOf(roleAsString);
+        request.setSessionAttribute(ROLE, role);
+    }
+
+    public Locale setLocale(Locale locale) {
+        locale = localizer.adjustLocale(locale);
+        ResourceBundle bundle = localizer.getBundle(locale);
+        request.setSessionAttribute(BUNDLE, bundle);
+        request.setSessionAttribute(LOCALE, locale);
+        return locale;
+    }
+
+    public void invalidate() {
+        request.setSessionAttribute(USER_ID, null);
+        request.setSessionAttribute(ROLE, null);
+    }
+
+    public void setUserId(Long id) {
+        request.setSessionAttribute(USER_ID, id);
+    }
+
+    @Override
+    public <T extends NameLocalizable> String getLocalName(T element) {
+        return localizer.getLocalName(element, getLocale());
+    }
+
+    @Override
+    public <T extends FirstLastNameLocalizable> String getLocalFirstName(T element) {
+        return localizer.getLocalFirstName(element, getLocale());
+    }
+
+    @Override
+    public <T extends FirstLastNameLocalizable> String getLocalLastName(T element) {
+        return localizer.getLocalLastName(element, getLocale());
+    }
+
+    @Override
+    public <T extends DescriptionLocalizable> String getLocalDescription(T element) {
+        return localizer.getLocalDescription(element, getLocale());
+    }
+
+    @Override
+    public Locale getLocale() {return getResourceBundle().getLocale();}
 
 
     // Private helper methods are listed below
 
     private String translate(Value messageToInternationalize, Object ... patternArguments) {
 
-        translate(patternArguments); // TODO : DEPRECATE ?
+        translate(patternArguments);
 
         String token = messageToInternationalize.name();
         String patternedMsg = getResourceBundle().getString(token);
         return MessageFormat.format(patternedMsg, patternArguments);
     }
 
-    private void translate(Object[] patternArguments) { // TODO : DEPRECATE ?
+    private void translate(Object[] patternArguments) {
         for (int index = 0; index < patternArguments.length; index++) {
             if (patternArguments[index] instanceof Value) {
                 patternArguments[index] = translate((Value) patternArguments[index]);
             }
         }
     }
-
-    private String translate(Translatable e) { // TODO : DEPRECATE ?
-        return translate(e.getPattern(), e.getArguments());
-    } // TODO DEPRECATE ?
 
 
     private String getPrevious(String attributeName) {

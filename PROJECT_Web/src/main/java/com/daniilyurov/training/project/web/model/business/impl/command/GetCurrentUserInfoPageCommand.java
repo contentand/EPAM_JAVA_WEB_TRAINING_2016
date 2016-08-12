@@ -1,12 +1,10 @@
 package com.daniilyurov.training.project.web.model.business.impl.command;
 
-import com.daniilyurov.training.project.web.model.business.api.Provider;
+import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.impl.service.ResultsService;
 import com.daniilyurov.training.project.web.model.business.impl.service.SubjectService;
-import com.daniilyurov.training.project.web.model.business.impl.service.UserService;
-import com.daniilyurov.training.project.web.model.business.impl.tool.LocalizationTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
-import com.daniilyurov.training.project.web.model.business.impl.tool.SessionManager;
+import com.daniilyurov.training.project.web.model.business.impl.validator.UserValidator;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Result;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Subject;
 import com.daniilyurov.training.project.web.model.dao.api.entity.User;
@@ -15,38 +13,35 @@ import java.util.List;
 import java.util.Map;
 
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
-import static com.daniilyurov.training.project.web.model.business.impl.Intent.*;
+import static com.daniilyurov.training.project.web.model.business.impl.Key.*;
 import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
 
 public class GetCurrentUserInfoPageCommand extends AbstractAuthorizedRoleCommand {
     @Override
-    protected String executeAsApplicant(Provider provider) throws Exception {
-        return sharedLogic(provider);
+    protected String executeAsApplicant(Request request) throws Exception {
+        return sharedLogic(request);
     }
 
     @Override
-    protected String executeAsAdministrator(Provider provider) throws Exception {
-        return sharedLogic(provider);
+    protected String executeAsAdministrator(Request request) throws Exception {
+        return sharedLogic(request);
     }
 
     // Private helper methods are listed below.
 
-    private String sharedLogic(Provider provider) throws Exception {
+    private String sharedLogic(Request request) throws Exception {
 
         // setup dependencies
-        UserService userService = provider.getUserService();
-        ResultsService resultsService = provider.getResultsService();
-        SubjectService subjectService = provider.getSubjectService();
-        SessionManager management = provider.getSessionManager();
-        LocalizationTool localization = provider.getLocalizationTool();
-        OutputTool output = provider.getOutputTool();
+        UserValidator userValidator = validatorFactory.getUserValidator(request);
+        ResultsService resultsService = servicesFactory.getResultsService();
+        SubjectService subjectService = servicesFactory.getSubjectService();
+        OutputTool output = outputToolFactory.getInstance(request);
 
         // let jsp know the header should be adjusted for user info page
         output.set(ATTRIBUTE_IS_USER_INFO_PAGE, true);
 
         // get all results of current user
-        Long currentUserId = management.getUserId().get();
-        User currentUser = userService.getUser(currentUserId);
+        User currentUser = userValidator.getCurrentUser().get();
         Result[] resultsOfCurrentUser = resultsService.getAllOf(currentUser);
 
         // output the results
@@ -59,7 +54,7 @@ public class GetCurrentUserInfoPageCommand extends AbstractAuthorizedRoleCommand
 
         // get the list of all subjects available
         List<Map.Entry<String, String>> subjectList = subjectService
-                .getMapWithSubjectIdsAndTheirLocalNames(localization);
+                .getMapWithSubjectIdsAndTheirLocalNames(output);
 
         // make this list available for the view to display
         output.set(ATTRIBUTE_SUBJECT_LIST, subjectList);

@@ -31,28 +31,30 @@ public class AuthenticationFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        logger.debug("Checking authority.");
+        logger.debug("Checking role.");
         HttpSession session = request.getSession();
 
-        if (session.getAttribute(AUTHORITY) == null) {
+        if (session.getAttribute(ROLE) == null) {
             synchronized (session) {
 
-                if (session.getAttribute(AUTHORITY) == null) {
+                if (session.getAttribute(ROLE) == null) {
 
-                    logger.debug("Authority is absent. So assigning Guest authority along with browser-default Locale");
+                    logger.debug("Role is absent. So assigning Guest role along with browser-default Locale");
 
                     session.setAttribute(USER_ID, null);
                     setDefaultLocalization(request);
-                    session.setAttribute(AUTHORITY, Role.GUEST);
+                    session.setAttribute(ROLE, Role.GUEST);
 
                 }
             }
         }
 
-        logger.debug("Authority is identifiable");
+        logger.debug("Role is identifiable");
 
         chain.doFilter(request, response);
     }
+
+    // Private helper methods are listed below
 
     private void setDefaultLocalization(HttpServletRequest request) {
         Localizer localizer = (Localizer) request.getServletContext()

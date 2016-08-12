@@ -1,15 +1,14 @@
 package com.daniilyurov.training.project.web.model.business.impl.validator;
 
-import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.api.Role;
 import com.daniilyurov.training.project.web.model.business.impl.tool.InputTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
-import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
-import com.daniilyurov.training.project.web.model.business.impl.tool.SessionManager;
+import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.User;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
 import static com.daniilyurov.training.project.web.i18n.Value.*;
@@ -17,14 +16,12 @@ import static com.daniilyurov.training.project.web.i18n.Value.*;
 public class UserValidator extends AbstractValidator {
 
     protected InputTool input;
-    protected SessionManager management;
-    protected RepositoryTool repository;
+    ServicesFactory servicesFactory;
 
-    public UserValidator(Request request, RepositoryTool repository) {
-        this.output = new OutputTool(request);
-        this.repository = repository;
-        this.input = new InputTool(request);
-        this.management = new SessionManager(request);
+    public UserValidator(InputTool inputTool, OutputTool outputTool, ServicesFactory servicesFactory) {
+        this.input = inputTool;
+        this.output = outputTool;
+        this.servicesFactory = servicesFactory;
     }
 
     public User parseValidUserInstance() throws ValidationException {
@@ -34,7 +31,7 @@ public class UserValidator extends AbstractValidator {
         user.setEmail(parseValidEmail());
         user.setAverageSchoolResult(parseValidAverageSchoolResult());
         user.setRole(Role.APPLICANT.name());
-        user.setLocale(management.getLocale());
+        user.setLocale(output.getLocale());
         user.setCyrillicFirstName(parseValidCyrillicFirstName());
         user.setCyrillicLastName(parseValidCyrillicLastName());
         user.setLatinFirstName(parseValidLatinFirstName());
@@ -136,7 +133,7 @@ public class UserValidator extends AbstractValidator {
         shouldBeNotNullNotEmpty(password);
 
         // find user with such login and password
-        User user = repository.getAutoCommittalUserRepository().getUserByLoginAndPassword(login, password);
+        User user = servicesFactory.getUserService().getUserByLoginAndPassword(login, password);
 
         // no user?
         if (user == null) {
@@ -150,12 +147,34 @@ public class UserValidator extends AbstractValidator {
         return user;
     }
 
+    public Locale parseValidLocale() {
+        String language = input.getParameter(PARAMETER_LANGUAGE);
+        currentField = FIELD_LOCALIZATION;
+        shouldBeNotNullNotEmpty(language);
+        return new Locale(language);
+    }
+
+
+    public Optional<User> getCurrentUser() throws DaoException {
+        Long id = input.getUserId();
+        if (id == null) return Optional.empty();
+        else return Optional.ofNullable(servicesFactory.getUserService().getUser(id));
+    }
+
+    public Long getCurrentUserId() {
+        return input.getUserId();
+    }
+
+
+    public Role getCurrentUserRole() {
+        return input.getRole();
+    }
 
     // Private helper methods are listed below
 
     private void ensureIsUniqueLogin(String login) {
         try {
-            if (repository.getAutoCommittalUserRepository().doesSuchLoginExist(login)) {
+            if (servicesFactory.getUserService().doesSuchLoginExist(login)) {
                 output.setErrorMsg(ERR_LOGIN_IS_TAKEN);
                 throw new ValidationException();
             }
@@ -165,10 +184,4 @@ public class UserValidator extends AbstractValidator {
         }
     }
 
-    public Locale parseValidLocale() {
-        String language = input.getParameter(PARAMETER_LANGUAGE);
-        currentField = FIELD_LOCALIZATION;
-        shouldBeNotNullNotEmpty(language);
-        return new Locale(language);
-    }
 }

@@ -20,21 +20,6 @@ public class HttpServletRequestWrapperTest extends Mockito {
         this.request = new MockHttpServletRequest();
     }
 
-    @Test // should get attribute from context container
-    public void testGetContextAttribute() throws Exception {
-
-        // setup
-        String key = "key";
-        String attribute = "attribute";
-        request.getServletContext().setAttribute(key, attribute);
-
-        // execute
-        String result = (String) new HttpServletRequestWrapper(request).getContextAttribute(key);
-
-        // verify
-        assertEquals(attribute, result);
-    }
-
     @Test // should get all parameter values
     public void testGetParameterValues() throws Exception {
 

@@ -1,11 +1,13 @@
 package com.daniilyurov.training.project.web.model.business.impl.command;
 
 
-import com.daniilyurov.training.project.web.model.business.api.Provider;
+import com.daniilyurov.training.project.web.model.business.api.Request;
+import com.daniilyurov.training.project.web.model.business.impl.Provided;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
+import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
 
 import static com.daniilyurov.training.project.web.i18n.Value.ERR_PAGE_NOT_FOUND;
-import static com.daniilyurov.training.project.web.model.business.impl.Intent.GET_MAIN_PAGE;
+import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 
 /**
  * This class provides final implementation of executeAsGuest
@@ -19,12 +21,19 @@ import static com.daniilyurov.training.project.web.model.business.impl.Intent.GE
  */
 public abstract class AbstractAuthorizedRoleCommand extends AbstractGeneralRoleCommand {
 
+    protected ServicesFactory servicesFactory;
+
+    @Provided
+    public void setServicesFactory(ServicesFactory servicesFactory) {
+        this.servicesFactory = servicesFactory;
+    }
+
     /**
      * Default final strategy for invokers with role Guest.
      */
     @Override
-    protected final String executeAsGuest(Provider provider) throws Exception {
-        OutputTool out = provider.getOutputTool();
+    protected final String executeAsGuest(Request request) throws Exception {
+        OutputTool out = outputToolFactory.getInstance(request);
         out.setErrorMsg(ERR_PAGE_NOT_FOUND);
         return GET_MAIN_PAGE;
 

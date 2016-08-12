@@ -5,9 +5,7 @@ import com.daniilyurov.training.project.web.model.dao.api.TransactionalRepositor
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.repository.*;
 
-/**
- * Created by Daniel Yurov on 26.07.2016.
- */
+
 public class RepositoryTool {
 
     RepositoryManagerFactory repositoryManagerFactory;

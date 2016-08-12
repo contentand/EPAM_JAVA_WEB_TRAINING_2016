@@ -1,6 +1,7 @@
 package com.daniilyurov.training.project.web.controller;
 
 import com.daniilyurov.training.project.web.model.business.api.CommandFactory;
+import com.daniilyurov.training.project.web.utility.SessionAttributes;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,7 @@ import static com.daniilyurov.training.project.web.utility.RequestParameters.PAR
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class FrontControllerTest {
+public class BatchFrontControllerTest {
 
     private static Properties urlMapping;
     private static Properties jspMapping;
@@ -42,6 +43,8 @@ public class FrontControllerTest {
             setProperty("[GET]/info", "INFO");
             setProperty("[GET]/user/{id}", "APPLICANT");
             setProperty("[POST]/lang", "LANG");
+            setProperty("[PUT]/lang", "LANG");
+            setProperty("[DELETE]/lang", "LANG");
         }};
 
         // Pseudo jsp-mapping.properties
@@ -64,8 +67,8 @@ public class FrontControllerTest {
         };
     }
 
-    public FrontControllerTest(String method, String url, String afterProcessDestinationPath,
-                               String expectedRedirect, String expectedForward) {
+    public BatchFrontControllerTest(String method, String url, String afterProcessDestinationPath,
+                                    String expectedRedirect, String expectedForward) {
 
         MockServletContext servletContext = new MockServletContext();
         servletContext.setAttribute(URL_MAPPING, urlMapping); // placing pseudo url-mapping into pseudo context
@@ -91,6 +94,8 @@ public class FrontControllerTest {
                 {"GET",       "/",         null,        "/login",       null},        // command decides to redirect
                 {"GET",       "/sdfsfsfs", null,        "/404",         null},        // unmapped link
                 {"POST",      "/lang",     "/info",     "/info",        null},        // command lets redirect to APDP
+                {"PUT",       "/lang",     "/info",     "/info",        null},        // command lets redirect to APDP
+                {"DELETE",    "/lang",     "/info",     "/info",        null},        // command lets redirect to APDP
                 {"GET",       "/user/32",  null,        null,           "user.jsp"}   // numeric ids handled properly
 
                 // * APDP = afterProcessDestinationPath - is an obligatory parameter sent with POST/PUT/DELETE requests.
@@ -103,5 +108,8 @@ public class FrontControllerTest {
         assertEquals("forward match", expectedForward, response.getForwardedUrl());
         assertEquals("redirect match", expectedRedirect, response.getRedirectedUrl());
     }
+
+
+
 
 }

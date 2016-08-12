@@ -4,6 +4,7 @@ import com.daniilyurov.training.project.web.model.business.api.Command;
 import com.daniilyurov.training.project.web.model.business.api.CommandFactory;
 import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.utility.SessionAttributes;
+import org.apache.log4j.Logger;
 
 import static com.daniilyurov.training.project.web.utility.ContextAttributes.*;
 import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
@@ -26,6 +27,8 @@ import java.util.Properties;
  * @author Daniil Yurov
  */
 public class FrontController extends HttpServlet {
+
+    private static Logger logger = Logger.getLogger(FrontController.class);
 
     @Override
     public String getServletInfo() {
@@ -96,8 +99,8 @@ public class FrontController extends HttpServlet {
     }
 
     /**
-     * The class allows to get user's Intent from request.
-     * Intent is a string that contains the name of concrete command the user wants to call.
+     * The class allows to get user's request key.
+     * Request key is a string that contains the name of concrete command the user wants to call.
      *
      * @author Daniil Yurov
      */
@@ -109,11 +112,11 @@ public class FrontController extends HttpServlet {
 
         /**
          * Analyzes request method and url, and then constructs urlPattern.
-         * It tries to map the urlPattern to Intent string using UrlMapping stored in Context Container.
+         * It tries to map the urlPattern to Request key string using UrlMapping stored in Context Container.
          * If mapping failed, a null is returned.
          *
          * @param request user's request instance to analyze
-         * @return a string representing user's Intent or null if the Intent is not recognized
+         * @return a request key or null if the key is not recognized
          */
         String getRequestKey(HttpServletRequest request) {
             this.provider = new MappingProvider(request);
@@ -231,7 +234,8 @@ public class FrontController extends HttpServlet {
         private void persistUserParametersInSession() {
             request.getParameterMap().forEach((key, value) -> {
                 if (SessionAttributes.CORE_SESSION_ATTRIBUTES.contains(key)) {
-                    throw new IllegalStateException();
+                    logger.error("Core attribute " + key + "has been used as parameter");
+                    return;
                 }
                 String input = value.length > 0 ? value[0] : "";
                 request.getSession().setAttribute(key, input);

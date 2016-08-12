@@ -13,7 +13,7 @@ import java.util.Enumeration;
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
 
 /**
- * Filter removes all session attributes except the core ones
+ * AttributeKillerFilter removes all session attributes except the core ones
  * after the jsp page has been rendered.
  *
  * Note: In web.xml, make sure the filter reacts on FORWARD only

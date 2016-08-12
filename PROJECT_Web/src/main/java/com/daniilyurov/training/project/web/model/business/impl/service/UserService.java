@@ -1,36 +1,26 @@
 package com.daniilyurov.training.project.web.model.business.impl.service;
 
-import com.daniilyurov.training.project.web.model.business.api.Request;
-import com.daniilyurov.training.project.web.model.business.api.Service;
 import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
-import com.daniilyurov.training.project.web.model.dao.api.RepositoryManagerFactory;
 import com.daniilyurov.training.project.web.model.dao.api.TransactionalRepositoryManager;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Result;
 import com.daniilyurov.training.project.web.model.dao.api.entity.User;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
-import com.daniilyurov.training.project.web.utility.ContextAttributes;
 
 import java.util.Locale;
 import java.util.Set;
 
-public class UserService implements Service {
+public class UserService {
 
     protected RepositoryTool repositoryTool;
-
-    public UserService(Request request) {
-        this.repositoryTool = new RepositoryTool((RepositoryManagerFactory) request.getContextAttribute(ContextAttributes.REPOSITORY_MANAGER_FACTORY));
-
-    }
 
     public UserService(RepositoryTool repositoryTool) {
         this.repositoryTool = repositoryTool;
     }
 
-    public void updateLocalePreferencesForUser(Long userId, Locale newLocale) {
+    public void updateLocalePreferencesForUser(User user, Locale newLocale) {
         try {
-            User currentUser = repositoryTool.getAutoCommittalUserRepository().getById(userId);
-            currentUser.setLocale(newLocale);
-            repositoryTool.getAutoCommittalUserRepository().update(currentUser);
+            user.setLocale(newLocale);
+            repositoryTool.getAutoCommittalUserRepository().update(user);
         } catch (DaoException e) {
             e.printStackTrace();
             throw new IllegalStateException(e);
@@ -58,5 +48,13 @@ public class UserService implements Service {
 
     public User getUser(Long id) throws DaoException {
         return repositoryTool.getAutoCommittalUserRepository().getById(id);
+    }
+
+    public User getUserByLoginAndPassword(String login, String password) throws DaoException {
+        return repositoryTool.getAutoCommittalUserRepository().getUserByLoginAndPassword(login, password);
+    }
+
+    public boolean doesSuchLoginExist(String login) throws DaoException {
+        return repositoryTool.getAutoCommittalUserRepository().doesSuchLoginExist(login);
     }
 }

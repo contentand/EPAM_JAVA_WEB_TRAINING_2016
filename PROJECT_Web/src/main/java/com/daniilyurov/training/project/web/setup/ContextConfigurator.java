@@ -3,8 +3,6 @@ package com.daniilyurov.training.project.web.setup;
 import com.daniilyurov.training.project.web.i18n.ConcreteLocalizer;
 import com.daniilyurov.training.project.web.i18n.Localizer;
 import com.daniilyurov.training.project.web.model.business.api.CommandFactory;
-import com.daniilyurov.training.project.web.model.business.api.Provider;
-import com.daniilyurov.training.project.web.model.business.api.Service;
 import com.daniilyurov.training.project.web.model.business.impl.ConcreteCommandFactory;
 import com.daniilyurov.training.project.web.model.dao.api.RepositoryManagerFactory;
 import com.daniilyurov.training.project.web.model.dao.implementation.DaoImplementationFactory;
@@ -30,11 +28,12 @@ public class ContextConfigurator {
     static Logger logger = Logger.getLogger(ContextConfigurator.class);
 
     @SuppressWarnings("FieldCanBeLocal")
-    private String ACCESS_TYPE_INIT_PARAM_NAME_IN_WEB_XML = "access.type";
+    private static String ACCESS_TYPE_INIT_PARAM_NAME_IN_WEB_XML = "access.type";
     @SuppressWarnings("FieldCanBeLocal")
-    private String BASE_NAME_INIT_PARAM_NAME_IN_WEB_XML = "base.name";
-
+    private static String BASE_NAME_INIT_PARAM_NAME_IN_WEB_XML = "base.name";
+    private Localizer localizer;
     private ServletContext context;
+    private RepositoryManagerFactory repositoryManagerFactory;
 
     /**
      * Initializes all dependencies and inserts them into
@@ -44,23 +43,23 @@ public class ContextConfigurator {
      */
     public void configure(ServletContext context) {
         this.context = context;
+        this.localizer = getLocalizer();
+        this.repositoryManagerFactory = getRepositoryManagerFactory();
         new DOMConfigurator().doConfigure(context.getRealPath("/WEB-INF/log4j.xml"), LogManager.getLoggerRepository());
 
         logger.info("Initializing application!");
         logger.info("Setting up context-wide dependencies.");
+
         context.setAttribute(ACTION_COMMAND_FACTORY, getFreshCommandFactory());
         context.setAttribute(JSP_MAPPING, getJspMapping());
         context.setAttribute(URL_MAPPING, getUrlMapping());
-        logger.info("1. Mapping for Commands-Jsp-Urls has been setup.");
-        context.setAttribute(REPOSITORY_MANAGER_FACTORY, getRepositoryManagerFactory());
-        logger.info("2. RepositoryManagerFactory has been setup.");
-        context.setAttribute(SERVICES, getTypeSafeEmptyServicesMap());
-        context.setAttribute(LOCALIZER, getLocalizer());
-        logger.info("3. Localizer has been setup.");
+        logger.info(". Mapping for Commands-Jsp-Urls has been setup.");
+
+        context.setAttribute(LOCALIZER, localizer);
 
         // Setting up Context ReLoader to allow reconfiguration via JMX
         ContextReloader reloader = new ContextReloader(this);
-        logger.info("4. ContextReloader has been setup.");
+        logger.info(". ContextReloader has been setup.");
         logger.info("Setup succeeded!");
     }
 
@@ -72,27 +71,18 @@ public class ContextConfigurator {
         context.setAttribute(URL_MAPPING, getUrlMapping());
     }
 
-    /**
-     * Since generics is lost once collection is placed into the Context Container,
-     * we need to make sure the map does not accept invalid values.
-     * Creates a map that throws exception if wrong type.
-     *
-     * @return
-     */
-    private Map<Provider.Services, Service> getTypeSafeEmptyServicesMap() {
-        return Collections.checkedMap(new HashMap<>(), Provider.Services.class, Service.class);
-    }
-
     private Localizer getLocalizer() {
+        logger.info(". Setting up Localizer.");
         String baseName = getBaseNameFromInitParams();
         return new ConcreteLocalizer(baseName);
     }
 
     private CommandFactory getFreshCommandFactory() {
-        return new ConcreteCommandFactory(getCommandClassMapping());
+        return new ConcreteCommandFactory(getCommandClassMapping(), localizer, repositoryManagerFactory);
     }
 
     private RepositoryManagerFactory getRepositoryManagerFactory() {
+        logger.info(". Setting up RepositoryManagerFactory.");
         DataSource dataSource = getDataSource();
         String requestedAccessType = getRequestedAccessTypeStringFromInitParams();
         DaoImplementationFactory.Type type = parseAccessType(requestedAccessType);

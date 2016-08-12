@@ -1,7 +1,7 @@
 package com.daniilyurov.training.project.web.model.business.impl.validator;
 
-import com.daniilyurov.training.project.web.model.business.api.Provider;
 import com.daniilyurov.training.project.web.model.business.impl.tool.*;
+import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
@@ -37,34 +37,26 @@ public class ApplicationValidator extends AbstractValidator {
     protected final long PARALLEL_STUDIES_LIMIT = 2;
 
     protected InputTool input;
-    protected SessionManager management;
-    protected RepositoryTool repository;
-    protected LocalizationTool localization;
-    protected Provider provider;
+    protected ServicesFactory servicesFactory;
 
 
-    public ApplicationValidator(InputTool input, Provider provider, RepositoryTool repository) {
-        this.output = provider.getOutputTool();
-        this.repository = repository;
+    public ApplicationValidator(InputTool inputTool, OutputTool outputTool, ServicesFactory servicesFactory) {
+        this.output = output;
         this.input = input;
-        this.management = provider.getSessionManager();
-        this.localization = provider.getLocalizationTool();
-        this.provider = provider;
+        this.servicesFactory = servicesFactory;
     }
 
     /**
      * Returns the number of faculties the indicated user is a student in.
      */
     public long countNumberOfParallelStudies(Long userId) throws DaoException {
-        return repository.getAutoCommittalApplicationRepository()
-                .countAllOf(userId, Application.Status.ACCEPTED);
+        return servicesFactory.getApplicationService().countAllOf(userId, Application.Status.ACCEPTED);
     }
 
     /**
      * Returns true if the user has exceeded the maximum number of parallel studies allowed.
      */
     public boolean hasExceededParallelStudyLimit(Long userId) throws DaoException {
-        long PARALLEL_STUDIES_LIMIT = 2;
         long parallelStudies = countNumberOfParallelStudies(userId);
         return parallelStudies > PARALLEL_STUDIES_LIMIT;
     }
@@ -104,7 +96,7 @@ public class ApplicationValidator extends AbstractValidator {
      */
     public Application parseExistingApplication() throws DaoException {
         Long id = parseApplicationId();
-        Application application = repository.getAutoCommittalApplicationRepository().getById(id);
+        Application application = servicesFactory.getApplicationService().getById(id);
         if (application == null) {
             output.setErrorMsg(ERR_NON_EXISTING_APPLICATION);
             throw new ValidationException();
@@ -129,9 +121,7 @@ public class ApplicationValidator extends AbstractValidator {
     }
 
     protected void ensureApplicationStatusAllowsCancel(Application application) {
-        // Applicant can cancel only if s/he has status Applied/UnderConsideration
-        Application.Status status = application.getStatus();
-        if (status != Application.Status.APPLIED && status != Application.Status.UNDER_CONSIDERATION) {
+        if (!isWillingToStudy(application)) {
             output.setErrorMsg(ERR_NON_EXISTING_APPLICATION);
             throw new IllegalStateException();
         }
@@ -146,21 +136,21 @@ public class ApplicationValidator extends AbstractValidator {
     }
 
     public void ensureCanConsider(Application application) {
-        if (!application.getStatus().equals(Application.Status.APPLIED)) {
+        if (!isApplied(application)) {
             output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
             throw new ValidationException();
         }
     }
 
     public void ensureCanBeExpelled(Application application) {
-        if (!application.getStatus().equals(Application.Status.ACCEPTED)) {
+        if (!isStudying(application)) {
             output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
             throw new ValidationException();
         }
     }
 
     public void ensureCanQuit(Application application) {
-        if (!application.getStatus().equals(Application.Status.ACCEPTED)) {
+        if (!isStudying(application)) {
             output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
             throw new ValidationException();
         }
@@ -186,7 +176,7 @@ public class ApplicationValidator extends AbstractValidator {
     protected void ensureNotExceedingMaximumParallelStudiesLimitation(Statistics statistics) throws DaoException {
 
         if (hasExceededParallelStudyLimit(statistics.user.getId())) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, localization.getLocalName(statistics.faculty));
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(statistics.faculty));
             output.setErrorMsg(INFO_MAXIMUM_X_PARALLEL_STUDIES, PARALLEL_STUDIES_LIMIT);
             output.setErrorMsg(ERR_ALREADY_A_STUDENT_AT_X_FACULTIES,
                     statistics.numberOfOtherFacultiesCurrentUserIsStudentOf);
@@ -198,7 +188,7 @@ public class ApplicationValidator extends AbstractValidator {
     protected void ensureNotAlreadyStudentAtDestinationFaculty(Statistics statistics) {
 
         if (statistics.isStudyingAtDestinationFaculty) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, localization.getLocalName(statistics.faculty));
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(statistics.faculty));
             output.setErrorMsg(ERR_ALREADY_A_STUDENT_AT_THIS_FACULTY);
             throw new ValidationException();
         }
@@ -207,7 +197,7 @@ public class ApplicationValidator extends AbstractValidator {
     // ensure not graduate of the destination faculty (rule #3.2)
     protected void ensureNotAlreadyGraduateOfDestinationFaculty(Statistics statistics) {
         if (statistics.isGraduateOfDestinationFaculty) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, localization.getLocalName(statistics.faculty));
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(statistics.faculty));
             output.setErrorMsg(ERR_ALREADY_A_GRADUATE_OF_THIS_FACULTY);
             throw new ValidationException();
         }
@@ -217,14 +207,14 @@ public class ApplicationValidator extends AbstractValidator {
     protected void ensureHasRequiredSubjects(Statistics statistics) throws DaoException {
         Faculty destinationFaculty = statistics.faculty;
         Set<Subject> requiredSubjects = destinationFaculty.getRequiredSubjects();
-        Set<Subject> studentSubjects = provider.getResultsService().getSubjectsOf(statistics.user);
+        Set<Subject> studentSubjects = servicesFactory.getResultsService().getSubjectsOf(statistics.user);
 
         if (!studentSubjects.containsAll(requiredSubjects)) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, localization.getLocalName(destinationFaculty));
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(destinationFaculty));
             requiredSubjects.stream()
                     .filter(requiredSubject -> !studentSubjects.contains(requiredSubject))
                     .forEach(missingSubject -> output.setErrorMsg(ERR_X_SUBJECT_MISSING_IN_PROFILE,
-                            localization.getLocalName(missingSubject)));
+                            output.getLocalName(missingSubject)));
             throw new ValidationException();
         }
     }
@@ -245,23 +235,31 @@ public class ApplicationValidator extends AbstractValidator {
         return application.getDateStudiesStart().equals(faculty.getDateRegistrationStarts());
     }
 
-    protected boolean isApplied(Application application) {
-        return application.getStatus().equals(Application.Status.APPLIED)
-                || application.getStatus().equals(Application.Status.UNDER_CONSIDERATION);
+    protected boolean isWillingToStudy(Application application) {
+        return isApplied(application) || isUnderConsideration(application);
     }
+
+    public boolean isUnderConsideration(Application application) {
+        return application.getStatus().equals(Application.Status.UNDER_CONSIDERATION);
+    }
+
+    public boolean isApplied(Application application) {
+        return application.getStatus().equals(Application.Status.APPLIED);
+    }
+
 
     // gather statistics of current user applications for further validation against rules
     private Statistics gatherStatisticsAboutAllCurrentUserApplications(User user, Faculty destinationFaculty)
             throws DaoException {
 
-        Application[] allUserApplications = repository.getAutoCommittalApplicationRepository().getAllOf(user);
+        Application[] allUserApplications = servicesFactory.getApplicationService().getAllOf(user);
         Statistics statistics = new Statistics();
         statistics.user = user;
         statistics.faculty = destinationFaculty;
 
         for (Application application : allUserApplications) {
             if (isSameFaculty(application, destinationFaculty)) {
-                if (isCurrentSelection(application, destinationFaculty) && isApplied(application)) {
+                if (isCurrentSelection(application, destinationFaculty) && isWillingToStudy(application)) {
                     statistics.isAppliedForCurrentSelectionToDestinationFaculty = true;
                 }
                 if (isStudying(application)) {

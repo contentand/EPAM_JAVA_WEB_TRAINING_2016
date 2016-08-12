@@ -18,21 +18,10 @@ import java.util.Enumeration;
 
 import static org.junit.Assert.*;
 
-public class AttributeKillerFilterTest extends Mockito {
-
-    HttpServletRequest request;
-    HttpServletResponse response;
-    FilterChain chain;
-
-    @Before
-    public void setup() {
-        request = mock(HttpServletRequest.class);
-        response = mock(HttpServletResponse.class);
-        chain = mock(FilterChain.class);
-    }
+public class AttributeKillerFilterTest extends AbstractFilter {
 
     @Test // should touch request only after the doFilter
-    public void touchesRequestAfterDoFilter() throws Exception {
+    public void always_touchesRequestAfterDoFilter() throws Exception {
 
         // setup
         when(request.getMethod()).thenReturn("POST");
@@ -47,7 +36,7 @@ public class AttributeKillerFilterTest extends Mockito {
     }
 
     @Test // should not touch response
-    public void doesNotTouchResponse() throws Exception {
+    public void always_doesNotTouchResponse() throws Exception {
 
         // setup
         when(request.getMethod()).thenReturn("POST");
@@ -60,7 +49,7 @@ public class AttributeKillerFilterTest extends Mockito {
     }
 
     @Test // should remove only non core session attributes
-    public void shouldTouchOnlyNonCoreAttributes() throws Exception {
+    public void always_touchesOnlyNonCoreAttributes() throws Exception {
 
         // setup
         String NON_CORE_ATTRIBUTE = "nonCore";

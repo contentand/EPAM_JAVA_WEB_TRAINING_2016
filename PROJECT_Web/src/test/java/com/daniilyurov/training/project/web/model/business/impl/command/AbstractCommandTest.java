@@ -1,12 +1,14 @@
 package com.daniilyurov.training.project.web.model.business.impl.command;
 
 
-import com.daniilyurov.training.project.web.model.business.api.Provider;
+import com.daniilyurov.training.project.web.model.business.api.Request;
+import com.daniilyurov.training.project.web.model.business.impl.tool.OutputToolFactory;
+import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
+import com.daniilyurov.training.project.web.model.business.impl.validator.ValidatorFactory;
 import com.daniilyurov.training.project.web.model.business.impl.service.*;
-import com.daniilyurov.training.project.web.model.business.impl.tool.LocalizationTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
-import com.daniilyurov.training.project.web.model.business.impl.tool.SessionManager;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ApplicationValidator;
+import com.daniilyurov.training.project.web.model.business.impl.validator.FacultyValidator;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ResultValidator;
 import com.daniilyurov.training.project.web.model.business.impl.validator.UserValidator;
 import org.junit.Before;
@@ -14,7 +16,7 @@ import org.mockito.Mockito;
 
 public class AbstractCommandTest extends Mockito {
 
-    Provider provider;
+    Request request;
 
     // Services
     FacultyService facultyService;
@@ -27,21 +29,21 @@ public class AbstractCommandTest extends Mockito {
     UserValidator userValidator;
     ResultValidator resultValidator;
     ApplicationValidator applicationValidator;
+    FacultyValidator facultyValidator;
 
     // Other
     OutputTool outputTool;
-    SessionManager sessionManager;
-    LocalizationTool localization;
 
-
-
+    OutputToolFactory outputToolFactory;
+    ValidatorFactory validatorFactory;
+    ServicesFactory servicesFactory;
 
     @Before
     public void settingUp() throws Exception {
 
+        request = mock(Request.class);
+
         outputTool = mock(OutputTool.class);
-        sessionManager = mock(SessionManager.class);
-        localization = mock(LocalizationTool.class);
         userValidator = mock(UserValidator.class);
         facultyService = mock(FacultyService.class);
         applicationService = mock(ApplicationService.class);
@@ -50,20 +52,23 @@ public class AbstractCommandTest extends Mockito {
         resultValidator = mock(ResultValidator.class);
         resultsService = mock(ResultsService.class);
         applicationValidator = mock(ApplicationValidator.class);
+        facultyValidator = mock(FacultyValidator.class);
 
-        provider = mock(Provider.class);
-        when(provider.getOutputTool()).thenReturn(outputTool);
-        when(provider.getSessionManager()).thenReturn(sessionManager);
-        when(provider.getLocalizationTool()).thenReturn(localization);
-        when(provider.getUserValidator()).thenReturn(userValidator);
-        when(provider.getFacultyService()).thenReturn(facultyService);
-        when(provider.getApplicationService()).thenReturn(applicationService);
-        when(provider.getUserService()).thenReturn(userService);
-        when(provider.getSubjectService()).thenReturn(subjectService);
-        when(provider.getResultValidator()).thenReturn(resultValidator);
-        when(provider.getResultsService()).thenReturn(resultsService);
-        when(provider.getApplicationValidator()).thenReturn(applicationValidator);
+        outputToolFactory = mock(OutputToolFactory.class);
+        validatorFactory = mock(ValidatorFactory.class);
+        servicesFactory = mock(ServicesFactory.class);
 
+        when(outputToolFactory.getInstance(eq(request))).thenReturn(outputTool);
+        when(validatorFactory.getApplicationValidator(eq(request))).thenReturn(applicationValidator);
+        when(validatorFactory.getFacultyValidator(eq(request))).thenReturn(facultyValidator);
+        when(validatorFactory.getResultValidator(eq(request))).thenReturn(resultValidator);
+        when(validatorFactory.getUserValidator(eq(request))).thenReturn(userValidator);
+
+        when(servicesFactory.getApplicationService()).thenReturn(applicationService);
+        when(servicesFactory.getFacultyService()).thenReturn(facultyService);
+        when(servicesFactory.getResultsService()).thenReturn(resultsService);
+        when(servicesFactory.getSubjectService()).thenReturn(subjectService);
+        when(servicesFactory.getUserService()).thenReturn(userService);
     }
 
 }

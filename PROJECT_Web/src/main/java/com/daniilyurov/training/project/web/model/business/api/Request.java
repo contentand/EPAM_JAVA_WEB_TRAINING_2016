@@ -8,13 +8,6 @@ package com.daniilyurov.training.project.web.model.business.api;
 public interface Request {
 
     /**
-     * This method permits to retrieve some application scope dependency.
-     * @param key name of the dependency
-     * @return an instance of dependency
-     */
-    Object getContextAttribute(String key);
-
-    /**
      * This methods returns all values of particular parameter.
      * @param key parameter name
      * @return an array of parameters or null if absent.

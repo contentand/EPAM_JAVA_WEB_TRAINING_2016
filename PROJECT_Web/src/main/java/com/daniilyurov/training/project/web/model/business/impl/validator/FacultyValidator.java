@@ -1,8 +1,8 @@
 package com.daniilyurov.training.project.web.model.business.impl.validator;
 
-import com.daniilyurov.training.project.web.model.business.api.Provider;
 import com.daniilyurov.training.project.web.model.business.impl.service.FacultyService;
 import com.daniilyurov.training.project.web.model.business.impl.tool.*;
+import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
@@ -14,18 +14,12 @@ import static com.daniilyurov.training.project.web.i18n.Value.*;
 public class FacultyValidator extends AbstractValidator {
 
     protected InputTool input;
-    protected SessionManager management;
-    protected RepositoryTool repository;
-    protected LocalizationTool localization;
-    protected Provider provider;
+    protected ServicesFactory servicesFactory;
 
-    public FacultyValidator(InputTool input, Provider provider, RepositoryTool repository) {
-        this.output = provider.getOutputTool();
-        this.repository = repository;
+    public FacultyValidator(InputTool input, OutputTool output, ServicesFactory servicesFactory) {
+        this.output = output;
         this.input = input;
-        this.management = provider.getSessionManager();
-        this.localization = provider.getLocalizationTool();
-        this.provider = provider;
+        this.servicesFactory = servicesFactory;
     }
 
     /**
@@ -33,18 +27,15 @@ public class FacultyValidator extends AbstractValidator {
      * Ensures that the id is parsable.
      * Ensures there is an instance of faculty corresponding to the id.
      * Ensures the faculty is open for registrations.
-     *
+     * <p>
      * Sends feedback to user via error_msg in case of failure.
      *
      * @return instance of Faculty eligible for registration
      * @throws ValidationException if the above mentioned conditions are violated.
-     * @throws DaoException in case Repository fails.
+     * @throws DaoException        in case Repository fails.
      */
     public Faculty parseAndGetFacultyValidForApplication() throws ValidationException, DaoException {
-        Long id = parseFacultyIdFromParameters();
-        Faculty destinationFaculty = getExistingFaculty(id);
-        ensureRegistrationIsOpen(destinationFaculty);
-        return destinationFaculty;
+        return null;
     }
 
     private void ensureRegistrationIsOpen(Faculty faculty){
@@ -53,13 +44,13 @@ public class FacultyValidator extends AbstractValidator {
         Date registrationEnd = faculty.getDateRegistrationEnds();
 
         if (currentDate.before(registrationStart)) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, localization.getLocalName(faculty));
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(faculty));
             output.setErrorMsg(ERR_REGISTRATION_STARTS_AFTER_X, registrationStart);
             throw new ValidationException();
         }
 
         if (currentDate.after(registrationEnd)) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, localization.getLocalName(faculty));
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(faculty));
             output.setErrorMsg(ERR_REGISTRATION_OVER);
             throw new ValidationException();
         }
@@ -79,7 +70,7 @@ public class FacultyValidator extends AbstractValidator {
     }
 
     public Faculty getExistingFaculty(Long facultyId) throws ValidationException, DaoException {
-        Faculty faculty = repository.getAutoCommittalFacultyRepository().getById(facultyId);
+        Faculty faculty = servicesFactory.getFacultyService().getById(facultyId);
         shouldNotBeNull(faculty);
         return faculty;
     }
@@ -93,7 +84,7 @@ public class FacultyValidator extends AbstractValidator {
     public Faculty parseFacultyValidForSelection() throws ValidationException, DaoException {
 
         Faculty faculty = parseExistingFacultyFromUrl();
-        FacultyService facultyService = provider.getFacultyService();
+        FacultyService facultyService = servicesFactory.getFacultyService();
 
         // ensure numberOfStudentsToConsider for faculty is 0
         long numberOfUnconsideredApplicants = facultyService.countUnconsideredApplicants(faculty);
