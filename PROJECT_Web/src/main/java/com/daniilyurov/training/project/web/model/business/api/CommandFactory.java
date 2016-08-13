@@ -9,8 +9,8 @@ package com.daniilyurov.training.project.web.model.business.api;
 public interface CommandFactory {
     /**
      *
-     * @param intent a String representation of key
+     * @param requestKey a String representation of key
      * @return concrete Command
      */
-    Command defineCommand(String intent);
+    Command defineCommand(String requestKey);
 }

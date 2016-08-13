@@ -1,6 +1,7 @@
 package com.daniilyurov.training.project.web.utility;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,8 +38,8 @@ public interface SessionAttributes {
     String ATTRIBUTE_APPLICATIONS_UNDER_CONSIDERATION = "applicantsUnderConsideration";
     String ATTRIBUTE_USER_INFO = "user";
 
-    Set<String> CORE_SESSION_ATTRIBUTES = new HashSet<String>() {{
+    Set<String> CORE_SESSION_ATTRIBUTES = Collections.unmodifiableSet(new HashSet<String>() {{
         addAll(Arrays.asList(BUNDLE, LOCALE, USER_ID, ROLE, CSRF_TOKEN_SERVER));
-    }};
+    }});
 
 }

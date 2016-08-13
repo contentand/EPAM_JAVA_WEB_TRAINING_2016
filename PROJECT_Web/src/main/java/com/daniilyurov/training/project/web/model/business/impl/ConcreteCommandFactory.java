@@ -14,36 +14,65 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * <p>CommandFactory implementation.
+ * To instantiate the class you need to provide it with application scoped dependencies:
+ * commandClassMapping, localizer and repositoryManagerFactory.</p>
+ *
+ * <p>Using the provided dependencies, the factory generates other application scoped
+ * dependencies that will be used by commands:
+ * OutputToolFactory, ServicesFactory, ValidatorFactory</p>
+ *
+ * <p>The class stores commands in a map. At the beginning the map is empty.
+ * Upon construction the class tries to locate and instantiate EMPTY command.
+ * If it fails to do so, an IllegalStateException is thrown.</p>
+ *
+ * <p>Once the class is instantiated, it is ready to accept requests via
+ * defineCommand(String requestKey) method.</p>
+ *
+ * <p>It takes the requestKey and then follows the steps:
+ * 1. Checks if there is a command corresponding to such key in the map.
+ * 2. If not, it tries to find if there is a class name mapped to such key.
+ * 3. If there is, it tries to instantiate it using reflection.
+ * 4. If it succeeds, it checks to see if there are @Provided-annotated methods and
+ *    injects required dependencies into the command instance.
+ * 5. If it succeeds, it puts the command into the commandCache map.
+ * 6. Returns the initiated command.
+ *
+ * <p>If it fails to find corresponding command, an empty command is returned.
+ * If it fails to instantiate a command via reflection, an IllegalStateException is thrown.</p>
+ *
+ * @author Daniil Yurov
+ */
 public class ConcreteCommandFactory implements CommandFactory {
 
     static Logger logger = Logger.getLogger(ConcreteCommandFactory.class);
 
-    // Dependencies to provide
+    // Possible dependencies to provide to commands
     private Localizer localizer;
     private RepositoryManagerFactory repositoryManagerFactory;
     private OutputToolFactory outputToolFactory;
     private ServicesFactory servicesFactory;
     private ValidatorFactory validatorFactory;
 
-
+    // Map to store initiated Commands
     private final Map<String, Command> commandCache;
-    private final Properties commandClassMapping;
 
-    public void setupDependenciesForInjection() {
-        RepositoryTool repositoryTool = new RepositoryTool(repositoryManagerFactory);
-        this.outputToolFactory = new OutputToolFactory(localizer);
-        this.servicesFactory = new ServicesFactory(repositoryTool);
-        this.validatorFactory = new ValidatorFactory(servicesFactory, outputToolFactory);
-    }
+    // Property to locate class name using the request key
+    private final Properties commandClassMapping;
 
     public ConcreteCommandFactory(Properties commandClassMapping, Localizer localizer,
                                   RepositoryManagerFactory repositoryManagerFactory) {
 
+        if (commandClassMapping == null
+                || localizer == null
+                || repositoryManagerFactory == null) {
+            throw new NullPointerException();
+        }
+
         this.localizer = localizer;
         this.repositoryManagerFactory = repositoryManagerFactory;
-        setupDependenciesForInjection();
-
-        if (commandClassMapping == null) throw new NullPointerException();
+        setupAdditionalDependenciesForInjection();
         this.commandCache = new HashMap<>();
         this.commandClassMapping = commandClassMapping;
 
@@ -55,6 +84,14 @@ public class ConcreteCommandFactory implements CommandFactory {
 
         Command emptyCommand = instantiateCommandClass(emptyCommandClassName);
         this.commandCache.put(Key.EMPTY, emptyCommand);
+    }
+
+    // constructs additional application-scoped dependencies that might be needed by commands
+    private void setupAdditionalDependenciesForInjection() {
+        RepositoryTool repositoryTool = new RepositoryTool(repositoryManagerFactory);
+        this.outputToolFactory = new OutputToolFactory(localizer);
+        this.servicesFactory = new ServicesFactory(repositoryTool);
+        this.validatorFactory = new ValidatorFactory(servicesFactory, outputToolFactory);
     }
 
     @Override
@@ -71,7 +108,8 @@ public class ConcreteCommandFactory implements CommandFactory {
         // if command is not in cache
         if (command == null) {
 
-            logger.debug("Command not found in cache. So trying to initialize it via reflection.");
+            logger.debug("Command not found in cache. So, we are trying " +
+                    "to initialize it via reflection.");
 
             // check if such requestKey is mapped to command class
             String className = commandClassMapping.getProperty(requestKey);
@@ -95,6 +133,7 @@ public class ConcreteCommandFactory implements CommandFactory {
         return command;
     }
 
+    // locates class, instantiates it and provides with requested dependencies
     private Command instantiateCommandClass(String className) {
 
         logger.debug("Found mapped class name and instantiating command via reflection.");
@@ -108,6 +147,7 @@ public class ConcreteCommandFactory implements CommandFactory {
             provideDependencies(aClass, command);
             return command;
         } catch (Exception e) {
+            logger.error("Failed to instantiate command class", e);
             throw new IllegalStateException("Unable to instantiate " + className, e);
         }
     }
@@ -128,7 +168,10 @@ public class ConcreteCommandFactory implements CommandFactory {
                         arguments.add(validatorFactory);
                     }
                     else {
-                        arguments.add(null);
+                        logger.error("Unsupported dependency is requested : " + type.getName() +
+                                "\nClass name: " + aClass.getName() +
+                                ", method name: " + method.getName());
+                        arguments.add(null); // we do not throw Exception but just set null
                     }
                 }
                 method.invoke(instance, arguments.toArray());
