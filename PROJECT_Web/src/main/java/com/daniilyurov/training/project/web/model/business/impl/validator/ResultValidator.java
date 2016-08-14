@@ -27,6 +27,7 @@ public class ResultValidator extends AbstractValidator {
     protected ServicesFactory servicesFactory;
 
     public ResultValidator(InputTool input, OutputTool output, ServicesFactory servicesFactory) {
+        if (input == null || output == null || servicesFactory == null) throw new NullPointerException();
         this.output = output;
         this.input = input;
         this.servicesFactory = servicesFactory;

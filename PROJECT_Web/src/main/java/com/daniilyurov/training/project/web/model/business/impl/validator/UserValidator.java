@@ -18,9 +18,10 @@ public class UserValidator extends AbstractValidator {
     protected InputTool input;
     ServicesFactory servicesFactory;
 
-    public UserValidator(InputTool inputTool, OutputTool outputTool, ServicesFactory servicesFactory) {
-        this.input = inputTool;
-        this.output = outputTool;
+    public UserValidator(InputTool input, OutputTool output, ServicesFactory servicesFactory) {
+        if (input == null || output == null || servicesFactory == null) throw new NullPointerException();
+        this.input = input;
+        this.output = output;
         this.servicesFactory = servicesFactory;
     }
 
