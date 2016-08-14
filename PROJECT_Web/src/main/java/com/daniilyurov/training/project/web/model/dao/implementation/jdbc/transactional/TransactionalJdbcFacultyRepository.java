@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static com.daniilyurov.training.project.web.model.dao.implementation.jdbc.sql.SqlStatements.*;
 
 /**
  * <p>This class provides core implementation for FacultyRepository interface using JDBC and SQL.
@@ -52,13 +53,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
             throw new DaoException("You cannot faculty instances with particular id!");
         }
 
-        String query =
-                "INSERT INTO faculty " +
-                        "(en_name, ru_name, de_name, en_description, ru_description, de_description, students, " +
-                        "date_registration_starts, date_registration_ends, date_studies_start, months_to_study) " +
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query,
+        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_FACULTY,
                 PreparedStatement.RETURN_GENERATED_KEYS))
         {
             // id is set by the database automatically. We are retrieving the assigned id below
@@ -89,9 +84,6 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
         } catch (SQLException | NullPointerException e) {
             throw new DaoException("Unable to create faculty instance. " + e.getMessage(), e);
         }
-
-
-
     }
 
     @Override
@@ -101,14 +93,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
             throw new DaoException("You cannot update faculties with no id!");
         }
 
-        String query =
-                "UPDATE faculty SET " +
-                        "en_name = ?, ru_name = ?, de_name = ?, en_description = ?, ru_description = ?, " +
-                        "de_description = ?, students = ?, date_registration_starts = ?, date_registration_ends = ?, " +
-                        "date_studies_start = ?, months_to_study = ? " +
-                        "WHERE id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_FACULTY))
         {
             preparedStatement.setString(1, faculty.getEnName());
             preparedStatement.setString(2, faculty.getRuName());
@@ -139,12 +124,12 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
             throw new DaoException("You cannot delete faculties with no id!");
         }
 
-        String query = "DELETE FROM faculty WHERE id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(DELETE_FACULTY))
         {
             preparedStatement.setLong(1, faculty.getId());
             deleteAllRequiredSubjects(faculty);
+            deleteAllApplications(faculty);
+            preparedStatement.execute();
 
         } catch (SQLException | NullPointerException e) {
             throw new DaoException("Unable to delete the faculty. " + e.getMessage(), e);
@@ -155,11 +140,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
     public Faculty getById(long id) throws DaoException {
         Faculty faculty;
 
-        String query = "SELECT * " +
-                "FROM faculty " +
-                "WHERE id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_FACULTY_BY_ID))
         {
             preparedStatement.setLong(1, id);
             faculty = extractFacultiesFromResultSet(preparedStatement).stream().findFirst().orElse(null);
@@ -175,9 +156,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
     public Faculty[] getAll() throws DaoException {
         Set<Faculty> faculties;
 
-        String query = "SELECT * FROM faculty";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_FACULTIES))
         {
             faculties = extractFacultiesFromResultSet(preparedStatement);
 
@@ -191,9 +170,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
     @Override
     public boolean doesSuchEnNameExist(String enName) throws DaoException {
 
-        String query = "SELECT COUNT(en_name) FROM faculty WHERE en_name = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
+        try (PreparedStatement preparedStatement = connection.prepareStatement(COUNT_FACULTIES_WITH_EN_NAME)){
             preparedStatement.setString(1, enName);
             return !isCountZero(preparedStatement);
         } catch (SQLException e) {
@@ -204,9 +181,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
     @Override
     public boolean doesSuchDeNameExist(String deName) throws DaoException {
 
-        String query = "SELECT COUNT(de_name) FROM faculty WHERE de_name = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
+        try (PreparedStatement preparedStatement = connection.prepareStatement(COUNT_FACULTIES_WITH_DE_NAME)){
             preparedStatement.setString(1, deName);
             return !isCountZero(preparedStatement);
         } catch (SQLException e) {
@@ -217,9 +192,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
     @Override
     public boolean doesSuchRuNameExist(String ruName) throws DaoException {
 
-        String query = "SELECT COUNT(ru_name) FROM faculty WHERE ru_name = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
+        try (PreparedStatement preparedStatement = connection.prepareStatement(COUNT_FACULTIES_WITH_RU_NAME)){
             preparedStatement.setString(1, ruName);
             return !isCountZero(preparedStatement);
         } catch (SQLException e) {
@@ -266,8 +239,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
 
     private void setAllRequiredSubjectsInBatch(Faculty faculty) throws DaoException {
 
-        String query = "INSERT INTO requirements (faculty_id, subject_id) VALUES(?,?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SET_REQUIRED_SUBJECTS_FOR_FACULTY)) {
 
             for (Subject subject : faculty.getRequiredSubjects()) {
                 preparedStatement.setLong(1, faculty.getId());
@@ -284,9 +256,7 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
 
     private void deleteAllRequiredSubjects(Faculty faculty) throws DaoException {
 
-        String query = "DELETE FROM requirements WHERE faculty_id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_REQUIRED_SUBJECTS_FOR_FACULTY)) {
             preparedStatement.setLong(1, faculty.getId());
             preparedStatement.execute();
 
@@ -295,15 +265,21 @@ public class TransactionalJdbcFacultyRepository implements FacultyRepository {
         }
     }
 
+    private void deleteAllApplications(Faculty faculty) throws DaoException {
+
+        try(PreparedStatement preparedStatement = connection.prepareStatement(DELETE_APPLICATIONS_FOR_FACULTY)) {
+            preparedStatement.setLong(1, faculty.getId());
+            preparedStatement.execute();
+        } catch (SQLException | NullPointerException e) {
+            throw new DaoException("Unable to remove applications for the faculty. " + e.getMessage(), e);
+        }
+    }
+
     private Set<Subject> getRequiredSubjects(Faculty faculty) throws DaoException {
 
         Set<Subject> subjects = new LinkedHashSet<>();
 
-        String query = "SELECT subject.id, subject.en_name, subject.de_name, subject.ru_name " +
-                "FROM requirements JOIN subject ON subject.id = requirements.subject_id " +
-                "WHERE requirements.faculty_id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_REQUIRED_SUBJECTS_FOR_FACULTY)) {
             preparedStatement.setLong(1, faculty.getId());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

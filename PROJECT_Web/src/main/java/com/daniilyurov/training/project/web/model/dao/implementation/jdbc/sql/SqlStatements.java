@@ -102,4 +102,38 @@ public interface SqlStatements {
             "WHERE application.applicant_id = ? AND application.status = ?";
 
     String UPDATE_STATUS_OF_ALL_APPLICATIONS = "UPDATE application SET status = ? WHERE id = ?";
+
+    String CREATE_FACULTY = "INSERT INTO faculty " +
+            "(en_name, ru_name, de_name, en_description, ru_description, de_description, students, " +
+            "date_registration_starts, date_registration_ends, date_studies_start, months_to_study) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+    String UPDATE_FACULTY = "UPDATE faculty SET " +
+            "en_name = ?, ru_name = ?, de_name = ?, en_description = ?, ru_description = ?, " +
+            "de_description = ?, students = ?, date_registration_starts = ?, date_registration_ends = ?, " +
+            "date_studies_start = ?, months_to_study = ? " +
+            "WHERE id = ?";
+
+    String DELETE_FACULTY = "DELETE FROM faculty WHERE id = ?";
+
+    String GET_FACULTY_BY_ID = "SELECT * FROM faculty WHERE id = ?";
+
+    String GET_ALL_FACULTIES = "SELECT * FROM faculty";
+
+    String COUNT_FACULTIES_WITH_EN_NAME = "SELECT COUNT(en_name) FROM faculty WHERE en_name = ?";
+
+    String COUNT_FACULTIES_WITH_DE_NAME = "SELECT COUNT(de_name) FROM faculty WHERE de_name = ?";
+
+    String COUNT_FACULTIES_WITH_RU_NAME = "SELECT COUNT(ru_name) FROM faculty WHERE ru_name = ?";
+
+    String SET_REQUIRED_SUBJECTS_FOR_FACULTY = "INSERT INTO requirements (faculty_id, subject_id) VALUES(?,?)";
+
+    String DELETE_REQUIRED_SUBJECTS_FOR_FACULTY = "DELETE FROM requirements WHERE faculty_id = ?";
+
+    String DELETE_APPLICATIONS_FOR_FACULTY = "DELETE FROM application WHERE faculty_id = ?";
+
+    String GET_REQUIRED_SUBJECTS_FOR_FACULTY = "SELECT subject.id, subject.en_name, " +
+            "subject.de_name, subject.ru_name " +
+            "FROM requirements JOIN subject ON subject.id = requirements.subject_id " +
+            "WHERE requirements.faculty_id = ?";
 }

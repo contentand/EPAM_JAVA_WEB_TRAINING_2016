@@ -3,36 +3,17 @@ package com.daniilyurov.training.project.web.model.dao.implementation.jdbc.trans
 import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 import com.daniilyurov.training.project.web.model.dao.api.entity.User;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.h2.Driver;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class TransactionalJdbcApplicationRepositoryTest {
-
-    BasicDataSource dataSource;
-
-    @Before
-    public void setup() {
-        dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(Driver.class.getName());
-        dataSource.setUrl("jdbc:h2:mem:test;INIT=runscript from 'classpath:base.sql'\\;"); // runs init script
-    }
-
-    @After
-    public void tearDown() throws SQLException {
-        dataSource.close();
-    }
+public class TransactionalJdbcApplicationRepositoryTest extends DataSourceHolder{
 
     @Test
     public void create_always_creates() throws Exception {
