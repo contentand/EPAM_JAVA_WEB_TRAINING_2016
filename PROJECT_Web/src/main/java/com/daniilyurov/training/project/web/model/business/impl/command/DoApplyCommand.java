@@ -50,7 +50,7 @@ public class DoApplyCommand extends AbstractGeneralRoleCommand {
         try {
             User user = userValidator.getCurrentUser().get();
             Faculty faculty = facultyValidator.parseAndGetFacultyValidForApplication();
-            Application application = applicationValidator.getValidBlankApplication(user, faculty);
+            Application application = applicationValidator.getValidFilledNewApplication(user, faculty);
             applicationService.persist(application);
             output.setSuccessMsg(SUC_APPLICATION_FOR_X_CREATED, output.getLocalName(faculty));
             return GET_MAIN_PAGE;

@@ -40,7 +40,7 @@ public class ApplicationValidator extends AbstractValidator {
     protected ServicesFactory servicesFactory;
 
 
-    public ApplicationValidator(InputTool inputTool, OutputTool outputTool, ServicesFactory servicesFactory) {
+    public ApplicationValidator(InputTool input, OutputTool output, ServicesFactory servicesFactory) {
         this.output = output;
         this.input = input;
         this.servicesFactory = servicesFactory;
@@ -58,14 +58,18 @@ public class ApplicationValidator extends AbstractValidator {
      */
     public boolean hasExceededParallelStudyLimit(Long userId) throws DaoException {
         long parallelStudies = countNumberOfParallelStudies(userId);
-        return parallelStudies > PARALLEL_STUDIES_LIMIT;
+        return parallelStudies >= PARALLEL_STUDIES_LIMIT;
     }
 
     /**
      * Ensures that the faculty is open for enrolment.
      * And the user can apply for this particular faculty.
+     * Returns an application instance with all necessary fields
+     * filled in.
+     * @return filled application instance
+     * @throws ValidationException if current user cannot apply
      */
-    public Application getValidBlankApplication(User user, Faculty faculty) throws DaoException {
+    public Application getValidFilledNewApplication(User user, Faculty faculty) throws DaoException {
         ensureCanApply(user, faculty);
         Application application = new Application();
         application.setUser(user);
@@ -104,37 +108,36 @@ public class ApplicationValidator extends AbstractValidator {
         return application;
     }
 
-    private Long parseApplicationId() {
-        String idString = input.getIdFromUri();
-        currentField = FIELD_APPLICATION_ID;
-        return parseLong(idString);
-    }
-
+    /**
+     * If the application is such that its state is not allowed to be
+     * modified to APPLIED state, a ValidationException is thrown.
+     * @param application to validate
+     * @throws DaoException if Repository layer fails
+     * @throws ValidationException if validation fails
+     */
     public void ensureCanReapply(Application application) throws DaoException {
         ensureIsForCurrentSelection(application);
         ensureCanApply(application.getUser(), application.getFaculty());
     }
 
+    /**
+     * If the application is such that its state is not allowed to be
+     * modified to CANCELLED state, a ValidationException is thrown.
+     * @param application to validate
+     * @throws DaoException if Repository layer fails
+     * @throws ValidationException if validation fails
+     */
     public void ensureCanCancel(Application application) throws DaoException {
         ensureIsForCurrentSelection(application);
         ensureApplicationStatusAllowsCancel(application);
     }
 
-    protected void ensureApplicationStatusAllowsCancel(Application application) {
-        if (!isWillingToStudy(application)) {
-            output.setErrorMsg(ERR_NON_EXISTING_APPLICATION);
-            throw new IllegalStateException();
-        }
-    }
-
-    private void ensureIsForCurrentSelection(Application application) {
-        // ensure application is for current selection
-        Faculty faculty = application.getFaculty();
-        if (!faculty.getDateStudiesStart().equals(application.getDateStudiesStart())) {
-            throw new IllegalStateException("Applications do not match!"); // system error :(
-        }
-    }
-
+    /**
+     * If the application is such that its state is not allowed to be
+     * modified to UNDER_CONSIDERATION state, a ValidationException is thrown.
+     * @param application to validate
+     * @throws ValidationException if validation fails
+     */
     public void ensureCanConsider(Application application) {
         if (!isApplied(application)) {
             output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
@@ -142,6 +145,12 @@ public class ApplicationValidator extends AbstractValidator {
         }
     }
 
+    /**
+     * If the application is such that its state is not allowed to be
+     * modified to EXPELLED state, a ValidationException is thrown.
+     * @param application to validate
+     * @throws ValidationException if validation fails
+     */
     public void ensureCanBeExpelled(Application application) {
         if (!isStudying(application)) {
             output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
@@ -149,6 +158,12 @@ public class ApplicationValidator extends AbstractValidator {
         }
     }
 
+    /**
+     * If the application is such that its state is not allowed to be
+     * modified to QUIT state, a ValidationException is thrown.
+     * @param application to validate
+     * @throws ValidationException if validation fails
+     */
     public void ensureCanQuit(Application application) {
         if (!isStudying(application)) {
             output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
@@ -156,16 +171,28 @@ public class ApplicationValidator extends AbstractValidator {
         }
     }
 
-    private class Statistics {
-        boolean isAppliedForCurrentSelectionToDestinationFaculty;
-        boolean isStudyingAtDestinationFaculty;
-        boolean isGraduateOfDestinationFaculty;
-        int numberOfOtherFacultiesCurrentUserIsStudentOf;
-        User user;
-        Faculty faculty;
+    // Private helper members are listed below -------------------------------------------------------
+
+    /**
+     * Private helper class to gather statistics.
+     * Note! It should not be given away as it has no
+     * getter/setter methods. FOR INTERNAL USE ONLY!
+     *
+     * Motivation:
+     * 1. Avoid redundant fields in the outer class
+     * 2. Avoid a long list of parameters in some private helper methods
+     *    within the outer class.
+     */
+    private final static class Statistics {
+        private boolean isAppliedForCurrentSelectionToDestinationFaculty;
+        private boolean isStudyingAtDestinationFaculty;
+        private boolean isGraduateOfDestinationFaculty;
+        private int numberOfOtherFacultiesCurrentUserIsStudentOf;
+        private User user; // user under test
+        private Faculty faculty; // faculty under test
     }
 
-    protected void ensureNotAlreadyAppliedForCurrentSelectionToDestinationFaculty(Statistics statistics) {
+    private void ensureNotAlreadyAppliedForCurrentSelectionToDestinationFaculty(Statistics statistics) {
         if (statistics.isAppliedForCurrentSelectionToDestinationFaculty) {
             output.setErrorMsg(ERR_ALREADY_BEING_APPLIED);
             throw new ValidationException();
@@ -173,9 +200,9 @@ public class ApplicationValidator extends AbstractValidator {
     }
 
     // ensure not already a student at two other faculties (rule #4)
-    protected void ensureNotExceedingMaximumParallelStudiesLimitation(Statistics statistics) throws DaoException {
+    private void ensureNotExceedingMaximumParallelStudiesLimitation(Statistics statistics) throws DaoException {
 
-        if (hasExceededParallelStudyLimit(statistics.user.getId())) {
+        if (statistics.numberOfOtherFacultiesCurrentUserIsStudentOf >= PARALLEL_STUDIES_LIMIT) {
             output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(statistics.faculty));
             output.setErrorMsg(INFO_MAXIMUM_X_PARALLEL_STUDIES, PARALLEL_STUDIES_LIMIT);
             output.setErrorMsg(ERR_ALREADY_A_STUDENT_AT_X_FACULTIES,
@@ -185,7 +212,7 @@ public class ApplicationValidator extends AbstractValidator {
     }
 
     // ensure not studying at the destination faculty (rule #3.1)
-    protected void ensureNotAlreadyStudentAtDestinationFaculty(Statistics statistics) {
+    private void ensureNotAlreadyStudentAtDestinationFaculty(Statistics statistics) {
 
         if (statistics.isStudyingAtDestinationFaculty) {
             output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(statistics.faculty));
@@ -195,7 +222,7 @@ public class ApplicationValidator extends AbstractValidator {
     }
 
     // ensure not graduate of the destination faculty (rule #3.2)
-    protected void ensureNotAlreadyGraduateOfDestinationFaculty(Statistics statistics) {
+    private void ensureNotAlreadyGraduateOfDestinationFaculty(Statistics statistics) {
         if (statistics.isGraduateOfDestinationFaculty) {
             output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(statistics.faculty));
             output.setErrorMsg(ERR_ALREADY_A_GRADUATE_OF_THIS_FACULTY);
@@ -204,7 +231,7 @@ public class ApplicationValidator extends AbstractValidator {
     }
 
     // ensure has required subjects (rule #6)
-    protected void ensureHasRequiredSubjects(Statistics statistics) throws DaoException {
+    private void ensureHasRequiredSubjects(Statistics statistics) throws DaoException {
         Faculty destinationFaculty = statistics.faculty;
         Set<Subject> requiredSubjects = destinationFaculty.getRequiredSubjects();
         Set<Subject> studentSubjects = servicesFactory.getResultsService().getSubjectsOf(statistics.user);
@@ -219,31 +246,33 @@ public class ApplicationValidator extends AbstractValidator {
         }
     }
 
-    protected boolean isSameFaculty(Application application, Faculty destinationFaculty) {
+    // is application for the destination faculty?
+    private boolean isSameFaculty(Application application, Faculty destinationFaculty) {
         return Objects.equals(application.getFaculty().getId(), destinationFaculty.getId());
     }
 
-    protected boolean isStudying(Application application) {
+    private boolean isStudying(Application application) {
         return application.getStatus().equals(Application.Status.ACCEPTED);
     }
 
-    protected boolean isGraduate(Application application) {
+    private boolean isGraduate(Application application) {
         return application.getStatus().equals(Application.Status.GRADUATED);
     }
 
-    protected boolean isCurrentSelection(Application application, Faculty faculty) {
-        return application.getDateStudiesStart().equals(faculty.getDateRegistrationStarts());
+    // is application for the current selection period of the faculty
+    private boolean isCurrentSelection(Application application, Faculty faculty) {
+        return application.getDateStudiesStart().equals(faculty.getDateStudiesStart());
     }
 
-    protected boolean isWillingToStudy(Application application) {
+    private boolean isWillingToStudy(Application application) {
         return isApplied(application) || isUnderConsideration(application);
     }
 
-    public boolean isUnderConsideration(Application application) {
+    private boolean isUnderConsideration(Application application) {
         return application.getStatus().equals(Application.Status.UNDER_CONSIDERATION);
     }
 
-    public boolean isApplied(Application application) {
+    private boolean isApplied(Application application) {
         return application.getStatus().equals(Application.Status.APPLIED);
     }
 
@@ -281,11 +310,37 @@ public class ApplicationValidator extends AbstractValidator {
 
 
     private void ensureCanApply(User user, Faculty faculty) throws DaoException {
+        if (user == null || faculty == null) throw new NullPointerException();
         Statistics statistics = gatherStatisticsAboutAllCurrentUserApplications(user, faculty);
         ensureNotAlreadyAppliedForCurrentSelectionToDestinationFaculty(statistics);   // (rule #3.3)
         ensureNotExceedingMaximumParallelStudiesLimitation(statistics);               // (rule #4)
         ensureNotAlreadyStudentAtDestinationFaculty(statistics);                      // (rule #3.1)
         ensureNotAlreadyGraduateOfDestinationFaculty(statistics);                     // (rule #3.2)
         ensureHasRequiredSubjects(statistics);                                        // (rule #6)
+    }
+
+
+    // if not, throws ValidationException
+    private void ensureApplicationStatusAllowsCancel(Application application) {
+        if (!isWillingToStudy(application)) {
+            output.setErrorMsg(ERR_NON_EXISTING_APPLICATION);
+            throw new ValidationException();
+        }
+    }
+
+    // ensure application is for current selection
+    private void ensureIsForCurrentSelection(Application application) {
+        Faculty faculty = application.getFaculty();
+        if (!faculty.getDateStudiesStart().equals(application.getDateStudiesStart())) {
+            output.setErrorMsg(ERR_EDITING_INVALID_APPLICATION);
+            throw new ValidationException();
+        }
+    }
+
+    // parses application id from the url or throws ValidationException
+    private Long parseApplicationId() {
+        String idString = input.getIdFromUri();
+        currentField = FIELD_APPLICATION_ID;
+        return parseLong(idString);
     }
 }

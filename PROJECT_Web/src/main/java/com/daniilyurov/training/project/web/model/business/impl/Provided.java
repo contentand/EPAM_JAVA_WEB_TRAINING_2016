@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A marker interface for dependency injection.
+ * A marker annotation for dependency injection.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

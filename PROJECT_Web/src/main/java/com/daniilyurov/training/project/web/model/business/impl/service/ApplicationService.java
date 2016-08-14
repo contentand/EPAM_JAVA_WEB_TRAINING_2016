@@ -156,8 +156,6 @@ public class ApplicationService {
         Application[] allApplications = repository.getAutoCommittalApplicationRepository()
                 .getAllOf(faculty, faculty.getDateStudiesStart());
 
-        int i = 1; //todo sout
-
         for (Application application : allApplications) {
             User user = application.getUser();
 
@@ -168,7 +166,7 @@ public class ApplicationService {
 
             double totalScore = user.getAverageSchoolResult();
             Set<Subject> subjectsRequired = faculty.getRequiredSubjects();
-            Result[] studentResults = new Result[0];
+            Result[] studentResults;
             studentResults = repository.getAutoCommittalResultRepository().getAllOf(user);
 
             for (Result result : studentResults) {
@@ -183,7 +181,6 @@ public class ApplicationService {
             }
             if (application.getStatus().equals(Application.Status.UNDER_CONSIDERATION)) {
                 applicants.getApplicantsUnderConsideration().add(applicant);
-                System.out.println(i++);
             }
         }
 
