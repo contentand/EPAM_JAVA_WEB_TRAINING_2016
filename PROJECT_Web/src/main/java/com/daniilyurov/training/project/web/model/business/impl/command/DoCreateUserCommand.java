@@ -36,7 +36,7 @@ public class DoCreateUserCommand extends AbstractUnauthorizedRoleCommand {
 
             // validate user input
             User newUser = userValidator.parseValidUserInstance();
-            Set<Result> results = resultValidator.parseResultsForUser(newUser);
+            Set<Result> results = resultValidator.parseResults(newUser);
 
             // save user and results
             userService.persist(newUser, results);

@@ -31,7 +31,7 @@ public class DoCreateUserCommandTest extends AbstractCommandTest {
     public void invalidResultInfoInputShouldRedirect() throws Exception {
 
         // setup
-        doThrow(ValidationException.class).when(resultValidator).parseResultsForUser(any());
+        doThrow(ValidationException.class).when(resultValidator).parseResults(any());
 
         // execute
         DoCreateUserCommand command = new DoCreateUserCommand();

@@ -15,7 +15,12 @@ import java.util.stream.Stream;
 import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
 import static com.daniilyurov.training.project.web.i18n.Value.*;
 
-
+/**
+ * ResultValidator is designed to analyze input parameters
+ * and locate, validate and create instances of subject results.
+ *
+ * @author Daniil Yurov
+ */
 public class ResultValidator extends AbstractValidator {
 
     protected InputTool input;
@@ -27,8 +32,18 @@ public class ResultValidator extends AbstractValidator {
         this.servicesFactory = servicesFactory;
     }
 
-    public Set<Result> parseResultsForUser(User user) throws ValidationException, DaoException {
-        Set<Result> newUserResults = new LinkedHashSet<>();
+    /**
+     * Looks for subject results from the parameters,
+     * validates the data, creates instances of results and returns a set of them.
+     * @param user the results will belong to
+     * @return a set of valid result instances assigned to the user
+     * @throws ValidationException if any user input is inconsistent
+     * @throws DaoException if repository layer fails
+     * @throws NullPointerException if null argument is passed
+     */
+    public Set<Result> parseResults(User user) throws ValidationException, DaoException, NullPointerException {
+        if (user == null) throw new NullPointerException();
+        Set<Result> userResults = new LinkedHashSet<>(); // should be linked to avoid shuffling
 
         Subject[] allSubjects = servicesFactory.getSubjectService().getAll();
         Stream.of(allSubjects).forEach(subject -> {
@@ -42,11 +57,10 @@ public class ResultValidator extends AbstractValidator {
                 result.setApplicant(user);
                 result.setSubject(subject);
                 result.setResult(subjectResult);
-                newUserResults.add(result);
-
+                userResults.add(result);
             }
         });
 
-        return newUserResults;
+        return userResults;
     }
 }
