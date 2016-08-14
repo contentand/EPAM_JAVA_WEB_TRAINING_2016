@@ -4,7 +4,7 @@ package com.daniilyurov.training.project.web.model.dao.implementation.jdbc;
 import com.daniilyurov.training.project.web.model.dao.api.AutoCommittalRepositoryManager;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.repository.*;
-import com.daniilyurov.training.project.web.model.dao.implementation.jdbc.autocommittable.*;
+import com.daniilyurov.training.project.web.model.dao.implementation.jdbc.autocommittal.*;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

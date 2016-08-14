@@ -1,4 +1,4 @@
-package com.daniilyurov.training.project.web.model.dao.implementation.jdbc.autocommittable;
+package com.daniilyurov.training.project.web.model.dao.implementation.jdbc.autocommittal;
 
 import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;

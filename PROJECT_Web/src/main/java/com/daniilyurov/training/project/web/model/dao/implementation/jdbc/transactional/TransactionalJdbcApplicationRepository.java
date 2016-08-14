@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import static com.daniilyurov.training.project.web.model.dao.implementation.jdbc.sql.SqlStatements.*;
+
 /**
  * <p>This class provides core implementation for ApplicationRepository interface using JDBC and SQL.
  *
@@ -49,11 +51,7 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot application instances with particular id!");
         }
 
-        String query =
-                "INSERT INTO application (faculty_id, applicant_id, status, date_studies_start, months_to_study) " +
-                        "VALUES (?,?,?,?,?)";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query,
+        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_APPLICATION,
                 PreparedStatement.RETURN_GENERATED_KEYS))
         {
             // id is set by the database automatically. We are retrieving the assigned id below
@@ -83,12 +81,7 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot update applications with no id!");
         }
 
-        String query =
-                "UPDATE application SET " +
-                        "status = ?, date_studies_start = ?, months_to_study = ? " +
-                        "WHERE id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_APPLICATION))
         {
             preparedStatement.setString(1, application.getStatus().name());
             preparedStatement.setDate(2, application.getDateStudiesStart());
@@ -108,9 +101,7 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot delete applications with no id!");
         }
 
-        String query = "DELETE FROM application WHERE id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(DELETE_APPLICATION))
         {
             preparedStatement.setLong(1, application.getId());
             preparedStatement.execute();
@@ -125,19 +116,7 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
 
         Application application;
 
-        String query = "SELECT application.id, application.faculty_id, application.applicant_id, application.status, " +
-                "application.date_studies_start, application.months_to_study, faculty.en_name, faculty.ru_name, " +
-                "faculty.de_name, faculty.en_description, faculty.ru_description, faculty.de_description, " +
-                "faculty.students, faculty.date_registration_starts, faculty.date_registration_ends, " +
-                "faculty.date_studies_start, faculty.months_to_study, user.login, user.password, user.email, " +
-                "user.authority, user.locale, user.latin_first_name, user.latin_last_name, user.cyrillic_first_name, " +
-                "user.cyrillic_last_name, user.average_school_result " +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "JOIN user ON application.applicant_id = user.id " +
-                "WHERE application.id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_APPLICATION_BY_ID))
         {
             preparedStatement.setLong(1, id);
             preparedStatement.execute();
@@ -155,22 +134,9 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
     public Application[] getAll() throws DaoException {
         Set<Application> applications;
 
-        String query = "SELECT application.id, application.faculty_id, application.applicant_id, application.status, " +
-                "application.date_studies_start, application.months_to_study, faculty.en_name, faculty.ru_name, " +
-                "faculty.de_name, faculty.en_description, faculty.ru_description, faculty.de_description, " +
-                "faculty.students, faculty.date_registration_starts, faculty.date_registration_ends, " +
-                "faculty.date_studies_start, faculty.months_to_study, user.login, user.password, user.email, " +
-                "user.authority, user.locale, user.latin_first_name, user.latin_last_name, user.cyrillic_first_name, " +
-                "user.cyrillic_last_name, user.average_school_result " +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "JOIN user ON application.applicant_id = user.id";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_APPLICATIONS))
         {
-
             preparedStatement.execute();
-
             applications = extractApplicationsFromResultSet(preparedStatement);
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
@@ -188,20 +154,7 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
         }
 
         Set<Application> applications;
-
-        String query = "SELECT application.id, application.faculty_id, application.applicant_id, application.status, " +
-                "application.date_studies_start, application.months_to_study, faculty.en_name, faculty.ru_name, " +
-                "faculty.de_name, faculty.en_description, faculty.ru_description, faculty.de_description, " +
-                "faculty.students, faculty.date_registration_starts, faculty.date_registration_ends, " +
-                "faculty.date_studies_start, faculty.months_to_study, user.login, user.password, user.email, " +
-                "user.authority, user.locale, user.latin_first_name, user.latin_last_name, user.cyrillic_first_name, " +
-                "user.cyrillic_last_name, user.average_school_result " +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "JOIN user ON application.applicant_id = user.id " +
-                "WHERE application.applicant_id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_APPLICATIONS_OF_USER))
         {
             preparedStatement.setLong(1, user.getId());
             applications = extractApplicationsFromResultSet(preparedStatement);
@@ -224,22 +177,12 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
 
         Application application;
 
-        String query = "SELECT application.id, application.faculty_id, application.applicant_id, application.status, " +
-                "application.date_studies_start, application.months_to_study, faculty.en_name, faculty.ru_name, " +
-                "faculty.de_name, faculty.en_description, faculty.ru_description, faculty.de_description, " +
-                "faculty.students, faculty.date_registration_starts, faculty.date_registration_ends, " +
-                "faculty.date_studies_start, faculty.months_to_study, user.login, user.password, user.email, " +
-                "user.authority, user.locale, user.latin_first_name, user.latin_last_name, user.cyrillic_first_name, " +
-                "user.cyrillic_last_name, user.average_school_result " +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "JOIN user ON application.applicant_id = user.id " +
-                "WHERE application.faculty_id = ? AND application.applicant_id = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_LAST_APPLICATION_OF_USER_FOR_FACULTY))
         {
             preparedStatement.setLong(1, faculty.getId());
             preparedStatement.setLong(2, userId);
+            preparedStatement.setLong(3, faculty.getId());
+            preparedStatement.setLong(4, userId);
             application = extractApplicationsFromResultSet(preparedStatement).stream().findFirst().orElse(null);
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
@@ -260,20 +203,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
         }
 
         Set<Application> applications;
-
-        String query = "SELECT application.id, application.faculty_id, application.applicant_id, application.status, " +
-                "application.date_studies_start, application.months_to_study, faculty.en_name, faculty.ru_name, " +
-                "faculty.de_name, faculty.en_description, faculty.ru_description, faculty.de_description, " +
-                "faculty.students, faculty.date_registration_starts, faculty.date_registration_ends, " +
-                "faculty.date_studies_start, faculty.months_to_study, user.login, user.password, user.email, " +
-                "user.authority, user.locale, user.latin_first_name, user.latin_last_name, user.cyrillic_first_name, " +
-                "user.cyrillic_last_name, user.average_school_result " +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "JOIN user ON application.applicant_id = user.id " +
-                "WHERE application.faculty_id = ? AND application.status = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(GET_ALL_APPLICATIONS_FOR_FACULTY_WITH_STATUS))
         {
             preparedStatement.setLong(1, faculty.getId());
             preparedStatement.setString(2, status.name());
@@ -297,20 +228,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
         }
 
         Set<Application> applications;
-
-        String query = "SELECT application.id, application.faculty_id, application.applicant_id, application.status, " +
-                "application.date_studies_start, application.months_to_study, faculty.en_name, faculty.ru_name, " +
-                "faculty.de_name, faculty.en_description, faculty.ru_description, faculty.de_description, " +
-                "faculty.students, faculty.date_registration_starts, faculty.date_registration_ends, " +
-                "faculty.date_studies_start, faculty.months_to_study, user.login, user.password, user.email, " +
-                "user.authority, user.locale, user.latin_first_name, user.latin_last_name, user.cyrillic_first_name, " +
-                "user.cyrillic_last_name, user.average_school_result " +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "JOIN user ON application.applicant_id = user.id " +
-                "WHERE application.faculty_id = ? AND application.date_studies_start = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(GET_ALL_APPLICATIONS_FOR_FACULTY_OF_PARTICULAR_SELECTION))
         {
             preparedStatement.setLong(1, faculty.getId());
             preparedStatement.setDate(2, studyStartDate);
@@ -334,12 +253,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot select applications of no status!");
         }
 
-        String query = "SELECT COUNT(*)" +
-                "FROM application " +
-                "JOIN faculty ON application.faculty_id = faculty.id " +
-                "WHERE application.faculty_id = ? AND application.status = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(COUNT_APPLICATIONS_FOR_FACULTY_OF_STATUS))
         {
             preparedStatement.setLong(1, faculty.getId());
             preparedStatement.setString(2, status.name());
@@ -366,11 +281,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot select applications of no status!");
         }
 
-        String query = "SELECT COUNT(*)" +
-                "FROM application " +
-                "WHERE application.applicant_id = ? AND application.status = ?";
-
-        try(PreparedStatement preparedStatement = connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(COUNT_APPLICATIONS_OF_USER_WITH_STATUS))
         {
             preparedStatement.setLong(1, userId);
             preparedStatement.setString(2, status.name());
@@ -397,9 +309,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("Null status is passed!");
         }
 
-        String query = "UPDATE application SET status = ? WHERE id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = connection
+                .prepareStatement(UPDATE_STATUS_OF_ALL_APPLICATIONS)) {
             for (Long id : applicationIds) {
                 preparedStatement.setString(1, status.name());
                 preparedStatement.setLong(2, id);
