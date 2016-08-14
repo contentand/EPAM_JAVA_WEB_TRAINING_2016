@@ -24,7 +24,15 @@ public class UserValidator extends AbstractValidator {
         this.servicesFactory = servicesFactory;
     }
 
-    public User parseValidUserInstance() throws ValidationException {
+    /**
+     * Reads input parameters containing the information
+     * about the new user, validates them and creates a
+     * new user instance.
+     * @return user instance containing state taken from parameters
+     * @throws ValidationException if any parameter value is not valid
+     * @throws DaoException if repository layer fails
+     */
+    public User parseValidUserInstance() throws ValidationException, DaoException {
         User user = new User();
         user.setLogin(parseValidLogin());
         user.setPassword(parseValidPassword());
@@ -37,76 +45,6 @@ public class UserValidator extends AbstractValidator {
         user.setLatinFirstName(parseValidLatinFirstName());
         user.setLatinLastName(parseValidLatinLastName());
         return user;
-    }
-
-    public String parseValidLogin() throws ValidationException {
-        currentField = FIELD_LOGIN;
-        String login = input.getParameter(PARAMETER_LOGIN);
-        shouldNotBeNull(login);
-        shouldNotBeEmpty(login);
-        shouldBeWithinRange(login, 4, Double.POSITIVE_INFINITY);
-        ensureIsUniqueLogin(login);
-        return login;
-    }
-
-    public String parseValidPassword() throws ValidationException {
-        currentField = FIELD_PASSWORD;
-        String password = input.getParameter(PARAMETER_PASSWORD);
-        shouldNotBeNull(password);
-        shouldNotBeEmpty(password);
-        shouldBeWithinRange(password, 6, Double.POSITIVE_INFINITY);
-        return password;
-    }
-
-    public String parseValidEmail() throws ValidationException {
-        currentField = FIELD_EMAIL;
-        String email = input.getParameter(PARAMETER_EMAIL);
-        shouldNotBeNull(email);
-        shouldNotBeEmpty(email);
-        shouldBeValidEmail(email);
-        return email;
-    }
-
-    public String parseValidCyrillicFirstName() throws ValidationException {
-        currentField = FIELD_FIRST_NAME;
-        String firstName = input.getParameter(PARAMETER_CYRILLIC_FIRST_NAME);
-        shouldBeNotNullNotEmpty(firstName);
-        shouldContainOnlyCyrillicCharsAndApostropheAndDash(firstName);
-        return firstName;
-    }
-
-    public String parseValidCyrillicLastName() throws ValidationException {
-        currentField = FIELD_LAST_NAME;
-        String lastName = input.getParameter(PARAMETER_CYRILLIC_LAST_NAME);
-        shouldBeNotNullNotEmpty(lastName);
-        shouldContainOnlyCyrillicCharsAndApostropheAndDash(lastName);
-        return lastName;
-    }
-
-    public String parseValidLatinFirstName() throws ValidationException {
-        currentField = FIELD_FIRST_NAME;
-        String firstName = input.getParameter(PARAMETER_LATIN_FIRST_NAME);
-        shouldBeNotNullNotEmpty(firstName);
-        shouldContainOnlyLatinCharsAndApostropheAndDash(firstName);
-        return firstName;
-    }
-
-    public String parseValidLatinLastName() throws ValidationException {
-        currentField = FIELD_LAST_NAME;
-        String lastName = input.getParameter(PARAMETER_LATIN_LAST_NAME);
-        shouldBeNotNullNotEmpty(lastName);
-        shouldContainOnlyLatinCharsAndApostropheAndDash(lastName);
-        return lastName;
-    }
-
-    public double parseValidAverageSchoolResult() throws ValidationException {
-        currentField = FIELD_AVERAGE_SCHOOL_RESULT;
-        String resultString = input.getParameter(PARAMETER_AVERAGE_SCHOOL_RESULT);
-        shouldNotBeNull(resultString);
-        shouldNotBeEmpty(resultString);
-        double result = parseDouble(resultString);
-        shouldBeWithinRange(result, 100.0, 200.0);
-        return result;
     }
 
     /**
@@ -147,6 +85,11 @@ public class UserValidator extends AbstractValidator {
         return user;
     }
 
+    /**
+     * Gets language code from parameter, ensures it is valid
+     * and returns a new Locale instance.
+     * @return a locale instance created from input parameter.
+     */
     public Locale parseValidLocale() {
         String language = input.getParameter(PARAMETER_LANGUAGE);
         currentField = FIELD_LOCALIZATION;
@@ -154,34 +97,112 @@ public class UserValidator extends AbstractValidator {
         return new Locale(language);
     }
 
-
+    /**
+     * Gets an instance of the user that is currently authenticated.
+     * If the user is guest, an empty Optional is returned.
+     * @return an optional containing the logged in user instance or null
+     * @throws DaoException if repository layer fails
+     */
     public Optional<User> getCurrentUser() throws DaoException {
         Long id = input.getUserId();
         if (id == null) return Optional.empty();
         else return Optional.ofNullable(servicesFactory.getUserService().getUser(id));
     }
 
+    /**
+     * Returns an id of the user currently logged in
+     * or null if it is a guest.
+     * @return id of the logged in user or null if such is absent
+     */
     public Long getCurrentUserId() {
         return input.getUserId();
     }
 
-
+    /**
+     * Returns the role of the session holder.
+     * @return user role
+     */
     public Role getCurrentUserRole() {
         return input.getRole();
     }
 
-    // Private helper methods are listed below
+    // Private helper methods are listed below------------------------------------------------------
 
-    private void ensureIsUniqueLogin(String login) {
-        try {
-            if (servicesFactory.getUserService().doesSuchLoginExist(login)) {
-                output.setErrorMsg(ERR_LOGIN_IS_TAKEN);
-                throw new ValidationException();
-            }
-        } catch (DaoException e) {
-            e.printStackTrace();
-            throw new IllegalStateException();
+    private void ensureIsUniqueLogin(String login) throws DaoException {
+        if (servicesFactory.getUserService().doesSuchLoginExist(login)) {
+            output.setErrorMsg(ERR_LOGIN_IS_TAKEN);
+            throw new ValidationException();
         }
+    }
+
+    private String parseValidLogin() throws ValidationException, DaoException {
+        currentField = FIELD_LOGIN;
+        String login = input.getParameter(PARAMETER_LOGIN);
+        shouldNotBeNull(login);
+        shouldNotBeEmpty(login);
+        shouldBeWithinRange(login, 4, Double.POSITIVE_INFINITY);
+        ensureIsUniqueLogin(login);
+        return login;
+    }
+
+    private String parseValidPassword() throws ValidationException {
+        currentField = FIELD_PASSWORD;
+        String password = input.getParameter(PARAMETER_PASSWORD);
+        shouldNotBeNull(password);
+        shouldNotBeEmpty(password);
+        shouldBeWithinRange(password, 6, Double.POSITIVE_INFINITY);
+        return password;
+    }
+
+    private String parseValidEmail() throws ValidationException {
+        currentField = FIELD_EMAIL;
+        String email = input.getParameter(PARAMETER_EMAIL);
+        shouldNotBeNull(email);
+        shouldNotBeEmpty(email);
+        shouldBeValidEmail(email);
+        return email;
+    }
+
+    private String parseValidCyrillicFirstName() throws ValidationException {
+        currentField = FIELD_FIRST_NAME;
+        String firstName = input.getParameter(PARAMETER_CYRILLIC_FIRST_NAME);
+        shouldBeNotNullNotEmpty(firstName);
+        shouldContainOnlyCyrillicCharsAndApostropheAndDash(firstName);
+        return firstName;
+    }
+
+    private String parseValidCyrillicLastName() throws ValidationException {
+        currentField = FIELD_LAST_NAME;
+        String lastName = input.getParameter(PARAMETER_CYRILLIC_LAST_NAME);
+        shouldBeNotNullNotEmpty(lastName);
+        shouldContainOnlyCyrillicCharsAndApostropheAndDash(lastName);
+        return lastName;
+    }
+
+    private String parseValidLatinFirstName() throws ValidationException {
+        currentField = FIELD_FIRST_NAME;
+        String firstName = input.getParameter(PARAMETER_LATIN_FIRST_NAME);
+        shouldBeNotNullNotEmpty(firstName);
+        shouldContainOnlyLatinCharsAndApostropheAndDash(firstName);
+        return firstName;
+    }
+
+    private String parseValidLatinLastName() throws ValidationException {
+        currentField = FIELD_LAST_NAME;
+        String lastName = input.getParameter(PARAMETER_LATIN_LAST_NAME);
+        shouldBeNotNullNotEmpty(lastName);
+        shouldContainOnlyLatinCharsAndApostropheAndDash(lastName);
+        return lastName;
+    }
+
+    private double parseValidAverageSchoolResult() throws ValidationException {
+        currentField = FIELD_AVERAGE_SCHOOL_RESULT;
+        String resultString = input.getParameter(PARAMETER_AVERAGE_SCHOOL_RESULT);
+        shouldNotBeNull(resultString);
+        shouldNotBeEmpty(resultString);
+        double result = parseDouble(resultString);
+        shouldBeWithinRange(result, 100.0, 200.0);
+        return result;
     }
 
 }
