@@ -8,9 +8,14 @@ import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
 import java.util.Date;
 
-import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
 import static com.daniilyurov.training.project.web.i18n.Value.*;
 
+/**
+ * FacultyValidator contains methods necessary for
+ * taking and validating user input concerning faculties.
+ *
+ * @author Daniil Yurov
+ */
 public class FacultyValidator extends AbstractValidator {
 
     protected InputTool input;
@@ -24,7 +29,7 @@ public class FacultyValidator extends AbstractValidator {
 
     /**
      * Ensures the user has sent faculty id as a parameter.
-     * Ensures that the id is parsable.
+     * Ensures that the id can be parsed.
      * Ensures there is an instance of faculty corresponding to the id.
      * Ensures the faculty is open for registrations.
      * <p>
@@ -35,52 +40,32 @@ public class FacultyValidator extends AbstractValidator {
      * @throws DaoException        in case Repository fails.
      */
     public Faculty parseAndGetFacultyValidForApplication() throws ValidationException, DaoException {
-        return null;
-    }
-
-    private void ensureRegistrationIsOpen(Faculty faculty){
-        Date currentDate = new Date(System.currentTimeMillis());
-        Date registrationStart = faculty.getDateRegistrationStarts();
-        Date registrationEnd = faculty.getDateRegistrationEnds();
-
-        if (currentDate.before(registrationStart)) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(faculty));
-            output.setErrorMsg(ERR_REGISTRATION_STARTS_AFTER_X, registrationStart);
-            throw new ValidationException();
-        }
-
-        if (currentDate.after(registrationEnd)) {
-            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(faculty));
-            output.setErrorMsg(ERR_REGISTRATION_OVER);
-            throw new ValidationException();
-        }
-    }
-
-
-    public Long parseFacultyIdFromParameters() throws ValidationException {
-        currentField = FIELD_FACULTY;
-        String idString = input.getParameter(PARAMETER_FACULTY_ID);
-        return parseLong(idString);
-    }
-
-    public Long parseFacultyIdFromUrl() throws ValidationException {
-        currentField = FIELD_FACULTY;
-        String idString = input.getIdFromUri();
-        return parseLong(idString);
-    }
-
-    public Faculty getExistingFaculty(Long facultyId) throws ValidationException, DaoException {
-        Faculty faculty = servicesFactory.getFacultyService().getById(facultyId);
-        shouldNotBeNull(faculty);
+        Faculty faculty = parseExistingFacultyFromUrl();
+        ensureRegistrationIsOpen(faculty);
         return faculty;
     }
 
-    public Faculty parseExistingFacultyFromUrl() throws DaoException {
-        // parse id, get faculty
+    /**
+     * Parses faculty id from the URL and returns an instance of the faculty.
+     * If parsing fails, throws ValidationException.
+     * If faculty with the indicated id is not found, ValidationException is thrown.
+     * @return faculty instance corresponding to the id indicated in the url.
+     * @throws DaoException if repository layer fails
+     */
+    public Faculty parseExistingFacultyFromUrl() throws ValidationException, DaoException {
         Long id = parseFacultyIdFromUrl();
         return getExistingFaculty(id);
     }
 
+    /**
+     * Parses faculty id from the URL and returns an instance of the faculty.
+     * If parsing fails, throws ValidationException.
+     * If faculty with the indicated id is not found, ValidationException is thrown.
+     * If faculty if not valid for selection, ValidationException is thrown.
+     * @return faculty instance valid for student selection
+     * @throws ValidationException if you cannot select best candidates from the faculty
+     * @throws DaoException if repository layer fails
+     */
     public Faculty parseFacultyValidForSelection() throws ValidationException, DaoException {
 
         Faculty faculty = parseExistingFacultyFromUrl();
@@ -101,5 +86,37 @@ public class FacultyValidator extends AbstractValidator {
         }
 
         return faculty;
+    }
+
+    // Private helper methods are listed below ------------------------------------------------
+
+    private Long parseFacultyIdFromUrl() throws ValidationException {
+        currentField = FIELD_FACULTY;
+        String idString = input.getIdFromUri();
+        return parseLong(idString);
+    }
+
+    private Faculty getExistingFaculty(Long facultyId) throws ValidationException, DaoException {
+        Faculty faculty = servicesFactory.getFacultyService().getById(facultyId);
+        shouldNotBeNull(faculty);
+        return faculty;
+    }
+
+    private void ensureRegistrationIsOpen(Faculty faculty){
+        Date currentDate = new Date(System.currentTimeMillis());
+        Date registrationStart = faculty.getDateRegistrationStarts();
+        Date registrationEnd = faculty.getDateRegistrationEnds();
+
+        if (currentDate.before(registrationStart)) {
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(faculty));
+            output.setErrorMsg(ERR_REGISTRATION_STARTS_AFTER_X, registrationStart);
+            throw new ValidationException();
+        }
+
+        if (currentDate.after(registrationEnd)) {
+            output.setErrorMsg(ERR_YOU_CANNOT_APPLY_FOR_X, output.getLocalName(faculty));
+            output.setErrorMsg(ERR_REGISTRATION_OVER);
+            throw new ValidationException();
+        }
     }
 }

@@ -17,38 +17,12 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class ApplicationValidatorTest extends Mockito {
-
-    InputTool input;
-    OutputTool output;
-    ServicesFactory services;
-
-    ApplicationService applicationService;
-    FacultyService facultyService;
-    ResultsService resultsService;
-    SubjectService subjectService;
-    UserService userService;
+public class ApplicationValidatorTest extends GenericValidator {
 
     ApplicationValidator validator;
 
     @Before
     public void setup() {
-        this.input = mock(InputTool.class);
-        this.output = mock(OutputTool.class);
-        this.services = mock(ServicesFactory.class);
-
-        this.applicationService = mock(ApplicationService.class);
-        this.facultyService = mock(FacultyService.class);
-        this.resultsService = mock(ResultsService.class);
-        this.subjectService = mock(SubjectService.class);
-        this.userService = mock(UserService.class);
-
-        when(services.getApplicationService()).thenReturn(applicationService);
-        when(services.getFacultyService()).thenReturn(facultyService);
-        when(services.getResultsService()).thenReturn(resultsService);
-        when(services.getSubjectService()).thenReturn(subjectService);
-        when(services.getUserService()).thenReturn(userService);
-
         validator = new ApplicationValidator(input, output, services);
     }
 
