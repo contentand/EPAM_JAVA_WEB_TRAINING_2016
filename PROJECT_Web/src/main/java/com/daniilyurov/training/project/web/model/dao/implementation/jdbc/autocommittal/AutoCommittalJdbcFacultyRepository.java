@@ -12,7 +12,14 @@ import java.sql.SQLException;
 import static com.daniilyurov.training.project.web.model.dao.implementation.jdbc.util.CommitAndCloseUtil.executeOperationThenCommitAndCloseConnection;
 import static com.daniilyurov.training.project.web.model.dao.implementation.jdbc.util.CommitAndCloseUtil.getFromSourceThenCloseConnection;
 
-
+/**
+ * <p>This class wraps bare TransactionalJdbcFacultyRepository methods.
+ *
+ * <p>It ensures that after each method call, changes are committed (where appropriate) and connection is closed.
+ * Thus releasing the ApplicationRepository invoker from this concern.
+ *
+ * @author Daniil Yurov
+ */
 public class AutoCommittalJdbcFacultyRepository extends TransactionalJdbcFacultyRepository {
 
     public AutoCommittalJdbcFacultyRepository(Connection connection) throws SQLException {

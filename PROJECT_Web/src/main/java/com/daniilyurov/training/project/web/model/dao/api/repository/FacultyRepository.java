@@ -20,7 +20,7 @@ public interface FacultyRepository extends GenericRepository<Faculty> {
      * @return true if there is already a Faculty with such English name or false otherwise.
      * @throws DaoException if it fails during lookup process
      */
-    boolean doesSuchEnNameExist(String enName) throws DaoException;;
+    boolean doesSuchEnNameExist(String enName) throws DaoException;
 
     /**
      * Checks if there is a Faculty with such German name.
@@ -29,7 +29,7 @@ public interface FacultyRepository extends GenericRepository<Faculty> {
      * @return true if there is already a Faculty with such German name or false otherwise.
      * @throws DaoException if it fails during lookup process
      */
-    boolean doesSuchDeNameExist(String deName) throws DaoException;;
+    boolean doesSuchDeNameExist(String deName) throws DaoException;
 
     /**
      * Checks if there is a Faculty with such Russian name.
@@ -38,5 +38,5 @@ public interface FacultyRepository extends GenericRepository<Faculty> {
      * @return true if there is already a Faculty with such Russian name or false otherwise.
      * @throws DaoException if it fails during lookup process
      */
-    boolean doesSuchRuNameExist(String ruName) throws DaoException;;
+    boolean doesSuchRuNameExist(String ruName) throws DaoException;
 }

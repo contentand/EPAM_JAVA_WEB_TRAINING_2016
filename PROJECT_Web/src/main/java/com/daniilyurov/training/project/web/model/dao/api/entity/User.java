@@ -1,11 +1,13 @@
 package com.daniilyurov.training.project.web.model.dao.api.entity;
 
 import com.daniilyurov.training.project.web.i18n.FirstLastNameLocalizable;
-import com.daniilyurov.training.project.web.i18n.Value;
-
 import java.util.Locale;
 import java.util.Optional;
 
+/**
+ * User contains information about user such as his authentication details,
+ * role, contact, names and average school result.
+ */
 public class User extends Entity implements FirstLastNameLocalizable {
 
     private String login;

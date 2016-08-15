@@ -35,6 +35,4 @@ public interface RequestParameters {
     String PARAMETER_NEW_SUBJECT_RU_NAME = "newSubjectRuName";
     String PARAMETER_ACTION = "action";
     String PARAMETER_AFTER_PROCESS_DESTINATION_PATH = "afterProcessDestinationPath";
-    String PARAMETER_CSRF_TOKEN = "csrfToken";
-
 }

@@ -18,7 +18,7 @@ public class DataSourceHolder {
     public void setup() {
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName(Driver.class.getName());
-        dataSource.setUrl("jdbc:h2:mem:test;INIT=runscript from 'classpath:base.sql'\\;"); // runs init script
+        dataSource.setUrl("jdbc:h2:mem:test;INIT=runscript from 'classpath:sript.sql'\\;"); // runs init script
     }
 
     @After

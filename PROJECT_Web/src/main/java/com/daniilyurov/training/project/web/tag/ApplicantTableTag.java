@@ -16,8 +16,7 @@ import static com.daniilyurov.training.project.web.utility.SessionAttributes.BUN
 
 
 /**
- * This class takes the head name for a table.
- * A set of information about applicants so that this could be displayed in the table.
+ * Draws a table with a specified header and applicant info as content.
  *
  * @author Daniil Yurov
  */
@@ -29,14 +28,17 @@ public class ApplicantTableTag extends TagSupport {
     private Set<ApplicantInfoItem> applicants;
     private boolean isButtonPresent;
 
+    @SuppressWarnings("unused") // set by jsp
     public void setHeadName(String headName) {
         this.headName = headName;
     }
 
+    @SuppressWarnings("unused") // set by jsp
     public void setApplicants(Set<ApplicantInfoItem> applicants) {
         this.applicants = applicants;
     }
 
+    @SuppressWarnings("unused") // set by jsp
     public void setButtonPresent(boolean buttonPresent) {
         isButtonPresent = buttonPresent;
     }

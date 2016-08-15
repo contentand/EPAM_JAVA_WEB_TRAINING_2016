@@ -12,9 +12,11 @@
 <body>
     <jsp:include page="shared/header.jsp"/>
 
+<%-- future feature
     <c:if test="${sessionScope.authority == 'ADMINISTRATOR'}">
         <a href="${pageContext.request.contextPath}/faculty/new">CREATE FACULTY!</a>
     </c:if>
+--%>
 
     <c:forEach var="faculty" items="${sessionScope.faculties}">
 

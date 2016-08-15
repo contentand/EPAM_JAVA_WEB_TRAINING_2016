@@ -15,6 +15,10 @@ import java.util.Set;
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.*;
 
+/**
+ *  Collects and sets the necessary information for
+ *  Main Page.
+ */
 public class GetMainPageCommand extends AbstractGeneralRoleCommand {
 
     private ServicesFactory servicesFactory;

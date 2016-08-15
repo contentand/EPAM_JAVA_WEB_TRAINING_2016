@@ -18,11 +18,13 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
+/**
+ * ContextConfigurator designed to configure servlet context
+ * upon initialization. It also provides a method to reinitialize
+ * Command-Url-Jsp mapping.
+ */
 public class ContextConfigurator {
 
     static Logger logger = Logger.getLogger(ContextConfigurator.class);
@@ -45,7 +47,10 @@ public class ContextConfigurator {
         this.context = context;
         this.localizer = getLocalizer();
         this.repositoryManagerFactory = getRepositoryManagerFactory();
-        new DOMConfigurator().doConfigure(context.getRealPath("/WEB-INF/log4j.xml"), LogManager.getLoggerRepository());
+
+        // configuring logger
+        new DOMConfigurator().doConfigure(context.getRealPath("/WEB-INF/log4j.xml"),
+                LogManager.getLoggerRepository());
 
         logger.info("Initializing application!");
         logger.info("Setting up context-wide dependencies.");
@@ -58,18 +63,22 @@ public class ContextConfigurator {
         context.setAttribute(LOCALIZER, localizer);
 
         // Setting up Context ReLoader to allow reconfiguration via JMX
-        ContextReloader reloader = new ContextReloader(this);
+        new ContextReloader(this);
         logger.info(". ContextReloader has been setup.");
         logger.info("Setup succeeded!");
     }
 
-    // !This method is PUBLIC! ContextReloader can call it to re-initiate mapping.
-    public void reConfigureCommandUrlJspMapping() {
+    /**
+     * Method designed for ContextReloader to call to re-initiate Command-Url-Jsp mapping.
+     */
+    void reConfigureCommandUrlJspMapping() {
         logger.info("Reconfiguring context Command-Url-Jsp mapping.");
         context.setAttribute(ACTION_COMMAND_FACTORY, getFreshCommandFactory());
         context.setAttribute(JSP_MAPPING, getJspMapping());
         context.setAttribute(URL_MAPPING, getUrlMapping());
     }
+
+    // Private helper methods are below ------------------------------------------------------------------------
 
     private Localizer getLocalizer() {
         logger.info(". Setting up Localizer.");
@@ -90,7 +99,7 @@ public class ContextConfigurator {
     }
 
     private synchronized DataSource getDataSource() {
-        Context environment = null;
+        Context environment;
         try {
             environment = (Context) (new InitialContext().lookup("java:comp/env"));
             return (DataSource) environment.lookup("jdbc/university");

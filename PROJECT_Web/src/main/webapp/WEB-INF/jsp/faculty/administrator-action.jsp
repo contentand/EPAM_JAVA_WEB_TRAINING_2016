@@ -18,7 +18,7 @@
         </table>
     </c:if>
 
-<%--
+<%-- left as future feature
     <c:if test="${faculty.registrationStatus == 'SCHEDULED'}">
         <form action="${pageContext.request.contextPath}/faculty/${faculty.id}/selection/cancel" method="POST">
             <input type="hidden" name="afterProcessDestinationPath" value="${sessionScope.currentPageLink}">
@@ -34,14 +34,14 @@
             <input type="submit" class="small-btn" value="<fmt:message key="page.manage_selection" bundle="${bd}"/>">
         </form>
     </c:if>
-<%--
+<%-- left as future feature
     <c:if test="${faculty.registrationStatus == 'OVER_SET'}">
         <form action="${pageContext.request.contextPath}/faculty/${faculty.id}/selection/new" method="GET">
             <input type="submit" class="small-btn" value="<fmt:message key="page.create_new_selection" bundle="${bd}"/>">
         </form>
     </c:if>
 --%>
-<%--
+<%-- left as future feature
     <form action="${pageContext.request.contextPath}/faculty/${faculty.id}" method="GET">
         <input type="submit" class="small-btn" value="<fmt:message key="page.edit_faculty"  bundle="${bd}"/>">
     </form>

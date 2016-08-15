@@ -4,6 +4,10 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 
+/**
+ * Concrete MBean that provides method to reload CommandUrlJsp mapping
+ * via Java Virtual Machine Management.
+ */
 public class ContextReloader implements ContextReloaderMBean {
 
     ContextConfigurator setup;

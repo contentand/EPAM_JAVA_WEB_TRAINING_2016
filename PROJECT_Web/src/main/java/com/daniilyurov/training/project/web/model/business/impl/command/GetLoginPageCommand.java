@@ -6,6 +6,10 @@ import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.ATTRIBUTE_IS_LOGIN_PAGE;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_LOGIN_PAGE;
 
+/**
+ *  Collects and sets the necessary information for displaying
+ *  Login Page.
+ */
 public class GetLoginPageCommand extends AbstractUnauthorizedRoleCommand {
 
     @Override

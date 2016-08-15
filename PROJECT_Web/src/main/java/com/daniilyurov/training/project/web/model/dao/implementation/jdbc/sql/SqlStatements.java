@@ -62,8 +62,8 @@ public interface SqlStatements {
             "FROM application " +
             "JOIN faculty ON application.faculty_id = faculty.id " +
             "JOIN user ON application.applicant_id = user.id " +
-            "WHERE application.faculty_id = ? AND application.applicant_id = ?" +
-            "AND application.date_studies_start IN (SELECT MAX(date_studies_start) FROM application " +
+            "WHERE application.faculty_id = ? AND application.applicant_id = ? " +
+            "AND application.date_studies_start IN (SELECT MAX(application.date_studies_start) FROM application " +
             "WHERE faculty_id=? AND applicant_id=?)";
 
     String GET_ALL_APPLICATIONS_FOR_FACULTY_WITH_STATUS = "SELECT application.id, application.faculty_id, " +

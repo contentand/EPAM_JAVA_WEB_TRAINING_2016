@@ -1,8 +1,12 @@
 package com.daniilyurov.training.project.web.model.business.impl.service;
 
-import com.daniilyurov.training.project.web.model.business.impl.service.*;
 import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
 
+/**
+ * ServicesFactory holds instances of
+ * all services of the application and provides them
+ * upon request.
+ */
 public class ServicesFactory {
 
     private ApplicationService applicationService;
@@ -19,22 +23,37 @@ public class ServicesFactory {
         this.userService = new UserService(repositoryTool);
     }
 
+    /**
+     * @return application service
+     */
     public ApplicationService getApplicationService() {
         return applicationService;
     }
 
+    /**
+     * @return faculty service
+     */
     public FacultyService getFacultyService() {
         return facultyService;
     }
 
+    /**
+     * @return results service
+     */
     public ResultsService getResultsService() {
         return resultsService;
     }
 
+    /**
+     * @return subject service
+     */
     public SubjectService getSubjectService() {
         return subjectService;
     }
 
+    /**
+     * @return user service
+     */
     public UserService getUserService() {
         return userService;
     }

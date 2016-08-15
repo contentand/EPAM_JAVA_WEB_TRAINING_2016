@@ -5,7 +5,6 @@ import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.impl.Provided;
 import com.daniilyurov.training.project.web.model.business.impl.tool.*;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputToolFactory;
-import com.daniilyurov.training.project.web.model.business.impl.service.ServicesFactory;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ValidatorFactory;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ValidationException;
 import com.daniilyurov.training.project.web.model.business.impl.validator.UserValidator;
@@ -17,17 +16,19 @@ import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_M
 import static com.daniilyurov.training.project.web.model.business.impl.Key.REDIRECT_TO_WHERE_HE_CAME_FROM;
 import static com.daniilyurov.training.project.web.i18n.Value.ERR_SYSTEM_ERROR;
 
+/**
+ * This command performs authentication of the user.
+ * It sets persisted language preference.
+ */
 public class DoLoginCommand implements Command {
 
     static Logger logger = Logger.getLogger(DoLoginCommand.class);
-    private ServicesFactory servicesFactory;
     private ValidatorFactory validatorFactory;
     private OutputToolFactory outputToolFactory;
 
     @Provided
-    public void setDependencies(ServicesFactory servicesFactory, ValidatorFactory validatorFactory,
+    public void setDependencies(ValidatorFactory validatorFactory,
                                 OutputToolFactory outputToolFactory) {
-        this.servicesFactory = servicesFactory;
         this.validatorFactory = validatorFactory;
         this.outputToolFactory = outputToolFactory;
     }
@@ -62,11 +63,7 @@ public class DoLoginCommand implements Command {
             logger.error("Error processing command. Business logic or Repository failed.", e);
             OutputTool output = outputToolFactory.getInstance(request);
             output.setErrorMsg(ERR_SYSTEM_ERROR);
-            return REDIRECT_TO_WHERE_HE_CAME_FROM; // TODO check if correct redirect
+            return GET_MAIN_PAGE;
         }
-
-
-
-
     }
 }

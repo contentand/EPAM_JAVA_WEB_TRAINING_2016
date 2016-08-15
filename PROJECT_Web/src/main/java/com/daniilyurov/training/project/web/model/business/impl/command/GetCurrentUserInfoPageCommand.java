@@ -16,6 +16,10 @@ import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.*;
 import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
 
+/**
+ *  Collects and sets the necessary information for displaying
+ *  Current User Info Page.
+ */
 public class GetCurrentUserInfoPageCommand extends AbstractAuthorizedRoleCommand {
     @Override
     protected String executeAsApplicant(Request request) throws Exception {
@@ -54,7 +58,7 @@ public class GetCurrentUserInfoPageCommand extends AbstractAuthorizedRoleCommand
 
         // get the list of all subjects available
         List<Map.Entry<String, String>> subjectList = subjectService
-                .getMapWithSubjectIdsAndTheirLocalNames(output);
+                .getListOfSubjectIdsAndTheirLocalNames(output);
 
         // make this list available for the view to display
         output.set(ATTRIBUTE_SUBJECT_LIST, subjectList);

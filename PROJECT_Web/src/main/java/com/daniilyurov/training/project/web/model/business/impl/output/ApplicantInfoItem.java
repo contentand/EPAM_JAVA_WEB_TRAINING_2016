@@ -1,5 +1,10 @@
 package com.daniilyurov.training.project.web.model.business.impl.output;
 
+/**
+ * A wrapper for encapsulating information
+ * about a particular applicant.
+ * Motivation: pass such item to view for display.
+ */
 public class ApplicantInfoItem implements Comparable<ApplicantInfoItem> {
     Long applicationId;
     String localFirstName;
@@ -38,9 +43,13 @@ public class ApplicantInfoItem implements Comparable<ApplicantInfoItem> {
         this.totalScore = totalScore;
     }
 
-    @Override // Descending order
+    @Override // Natural order: by total score, descending.
     public int compareTo(ApplicantInfoItem o) {
-        return Double.compare(o.totalScore, this.totalScore);
+        int scoreDifference = Double.compare(o.totalScore, this.totalScore);
+
+        return scoreDifference == 0
+                ? Long.compare(o.applicationId, this.applicationId)
+                : scoreDifference;
     }
 
     @Override
@@ -51,7 +60,6 @@ public class ApplicantInfoItem implements Comparable<ApplicantInfoItem> {
         ApplicantInfoItem that = (ApplicantInfoItem) o;
 
         return applicationId != null ? applicationId.equals(that.applicationId) : that.applicationId == null;
-
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.daniilyurov.training.project.web.model.business.impl.validator.Valida
 import org.apache.log4j.Logger;
 
 import static com.daniilyurov.training.project.web.i18n.Value.ERR_SYSTEM_ERROR;
-import static com.daniilyurov.training.project.web.model.business.impl.Key.REDIRECT_TO_WHERE_HE_CAME_FROM;
+import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 
 /**
  * Encapsulates role definition steps.
@@ -38,7 +38,6 @@ public abstract class AbstractGeneralRoleCommand implements Command {
     @Override
     public final String execute(Request request) {
         try {
-            String intent;
             Role role = getRole(request);
             switch (role) {
                 case ADMINISTRATOR:
@@ -55,7 +54,7 @@ public abstract class AbstractGeneralRoleCommand implements Command {
             logger.error("Error processing command. Business logic or Repository failed.", e);
             OutputTool output = outputToolFactory.getInstance(request);
             output.setErrorMsg(ERR_SYSTEM_ERROR);
-            return REDIRECT_TO_WHERE_HE_CAME_FROM; // TODO check if correct redirect
+            return GET_MAIN_PAGE;
         }
 
     }

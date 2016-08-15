@@ -36,6 +36,7 @@ public interface SessionAttributes {
     String ATTRIBUTE_FACULTY = "faculty";
     String ATTRIBUTE_UNCONSIDERED_APPLICANTS = "unconsideredApplicants";
     String ATTRIBUTE_APPLICATIONS_UNDER_CONSIDERATION = "applicantsUnderConsideration";
+    String ATTRIBUTE_STUDENTS_FROM_LAST_SELECTION = "studentsFromLastSelection";
     String ATTRIBUTE_USER_INFO = "user";
 
     Set<String> CORE_SESSION_ATTRIBUTES = Collections.unmodifiableSet(new HashSet<String>() {{

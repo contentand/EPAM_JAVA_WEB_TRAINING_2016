@@ -10,6 +10,10 @@ import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.*;
 import static com.daniilyurov.training.project.web.i18n.Value.*;
 
+/**
+ * This command selects the top best candidates and turns them
+ * into students of the faculties, other candidates are rejected.
+ */
 public class DoAcceptBestCommand extends AbstractAdminOnlyCommand {
 
     @Override
@@ -33,14 +37,9 @@ public class DoAcceptBestCommand extends AbstractAdminOnlyCommand {
                     numberSelected, output.getLocalName(faculty));
 
             // go to
-            return GET_MAIN_PAGE;
+            return REDIRECT_TO_WHERE_HE_CAME_FROM;
         } catch (ValidationException e) {
             return GET_MAIN_PAGE;
         }
-
-
-
-        // notify 3.
-        // respond 4.
     }
 }

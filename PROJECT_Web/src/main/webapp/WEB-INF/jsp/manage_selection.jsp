@@ -24,7 +24,8 @@
               and faculty.numberOfStudentsToAddUnderConsideration == 0}">
 
         <form method="POST" action="${pageContext.request.contextPath}/faculty/${faculty.id}/select-best">
-            <input type="hidden" name="afterProcessDestinationPath" value="${sessionScope.currentPageLink}">
+            <input type="hidden" name="afterProcessDestinationPath"
+                   value="${pageContext.request.contextPath}/faculty/${faculty.id}/selection/last">
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfTokenServer}">
             <input class="small-btn" type="submit" value="<fmt:message key="page.select_the_best" bundle="${bd}"/>">
         </form>

@@ -1,25 +1,23 @@
 package com.daniilyurov.training.project.web.model.business.impl.command;
 
 import com.daniilyurov.training.project.web.model.business.api.Request;
-import com.daniilyurov.training.project.web.model.business.impl.output.FacultyInfoItem;
+import com.daniilyurov.training.project.web.model.business.impl.output.ApplicantInfoItem;
 import com.daniilyurov.training.project.web.model.business.impl.service.ApplicationService;
 import com.daniilyurov.training.project.web.model.business.impl.service.FacultyService;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import com.daniilyurov.training.project.web.model.business.impl.validator.FacultyValidator;
+import com.daniilyurov.training.project.web.model.business.impl.validator.ValidationException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
-import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
+import java.util.TreeSet;
+
 import static com.daniilyurov.training.project.web.model.business.impl.Key.*;
+import static com.daniilyurov.training.project.web.utility.SessionAttributes.ATTRIBUTE_FACULTY_NAME;
+import static com.daniilyurov.training.project.web.utility.SessionAttributes.ATTRIBUTE_STUDENTS_FROM_LAST_SELECTION;
 
-/**
- *  Collects and sets the necessary information for displaying
- *  Selection Management Page.
- */
-public class GetSelectionManagementPageCommand extends AbstractAdminOnlyCommand {
-
+public class GetLastAcceptedPageCommand extends AbstractAdminOnlyCommand {
     @Override
     protected String executeAsAdministrator(Request request) throws Exception {
-
         // setup dependencies
         FacultyValidator facultyValidator = validatorFactory.getFacultyValidator(request);
         FacultyService facultyService = servicesFactory.getFacultyService();
@@ -29,22 +27,15 @@ public class GetSelectionManagementPageCommand extends AbstractAdminOnlyCommand 
         // get faculty
         Faculty faculty = facultyValidator.parseExistingFacultyFromUrl();
 
-        // get info about faculty
-        FacultyInfoItem facultyInfo = new FacultyInfoItem();
-        facultyService.fillWithStatistics(facultyInfo, faculty, output);
+        // get students from last selection
+        TreeSet<ApplicantInfoItem> studentsOfLatestSelection = applicationService
+                .collectStudentsOfLastSelection(faculty, output);
 
-        // get info about applicants
-        ApplicationService.Applicants applicants = applicationService
-                .collectApplicants(faculty, output);
+        // notify
+        output.set(ATTRIBUTE_STUDENTS_FROM_LAST_SELECTION,
+                studentsOfLatestSelection);
+        output.set(ATTRIBUTE_FACULTY_NAME, output.getLocalName(faculty));
 
-        // output data
-        output.set(ATTRIBUTE_FACULTY, facultyInfo);
-        output.set(ATTRIBUTE_UNCONSIDERED_APPLICANTS,
-                applicants.getUnconsideredApplicants());
-        output.set(ATTRIBUTE_APPLICATIONS_UNDER_CONSIDERATION,
-                applicants.getApplicantsUnderConsideration());
-
-        return GET_CURRENT_FACULTY_SELECTION_MANAGEMENT_PAGE;
-
+        return GET_LAST_ACCEPTED_PAGE;
     }
 }

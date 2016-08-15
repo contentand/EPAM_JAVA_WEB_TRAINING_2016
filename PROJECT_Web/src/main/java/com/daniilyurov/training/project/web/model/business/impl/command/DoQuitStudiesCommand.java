@@ -3,7 +3,6 @@ package com.daniilyurov.training.project.web.model.business.impl.command;
 import com.daniilyurov.training.project.web.i18n.Value;
 import com.daniilyurov.training.project.web.model.business.api.Request;
 import com.daniilyurov.training.project.web.model.business.impl.service.ApplicationService;
-import com.daniilyurov.training.project.web.model.business.impl.service.UserService;
 import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ApplicationValidator;
 import com.daniilyurov.training.project.web.model.business.impl.validator.UserValidator;
@@ -21,7 +20,6 @@ public class DoQuitStudiesCommand extends AbstractApplicantOnlyCommand {
         try {
 
             // setup dependencies
-            UserService userService = servicesFactory.getUserService();
             ApplicationService applicationService = servicesFactory.getApplicationService();
             UserValidator userValidator = validatorFactory.getUserValidator(request);
             ApplicationValidator applicationValidator = validatorFactory.getApplicationValidator(request);

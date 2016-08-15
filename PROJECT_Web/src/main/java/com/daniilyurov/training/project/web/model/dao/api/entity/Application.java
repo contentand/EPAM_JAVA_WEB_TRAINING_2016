@@ -3,7 +3,11 @@ package com.daniilyurov.training.project.web.model.dao.api.entity;
 import java.sql.Date;
 import java.util.Optional;
 
-
+/**
+ * Application is an item of information that contains
+ * the user that applies, the faculty and selection date
+ * s/he has applied for, his current status.
+ */
 public class Application extends Entity {
 
     private Faculty faculty;
@@ -11,7 +15,6 @@ public class Application extends Entity {
     private Status status;
     private Date dateStudiesStart;
     private Long monthsToStudy;
-
 
     public enum Status {
         APPLIED,             // applicant wants to study; administrator has not registered him/her yet.

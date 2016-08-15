@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Faculty contains its names, descriptions and information about the latest
+ * selection.
+ */
 public class Faculty extends Entity implements NameLocalizable, DescriptionLocalizable {
 
     private String enName; // faculty name in English
@@ -19,8 +23,8 @@ public class Faculty extends Entity implements NameLocalizable, DescriptionLocal
     private int students; // number of students that will be selected
     private Date dateRegistrationStarts; // date when candidates can start applying
     private Date dateRegistrationEnds; // date until which candidates can send their applications
-    private Date dateStudiesStart; //
-    private Long monthsToStudy;
+    private Date dateStudiesStart; // date studies for current selection start
+    private Long monthsToStudy; // the study period of current selection
 
     private Set<Subject> requiredSubjects;
 

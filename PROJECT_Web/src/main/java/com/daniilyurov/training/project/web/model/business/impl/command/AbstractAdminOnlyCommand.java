@@ -6,6 +6,10 @@ import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import static com.daniilyurov.training.project.web.i18n.Value.ERR_PAGE_NOT_FOUND;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 
+/**
+ * Provides default strategy for Applicant role.
+ * Descendants should only override strategy for administrator.
+ */
 public abstract class AbstractAdminOnlyCommand extends AbstractAuthorizedRoleCommand {
 
     /**

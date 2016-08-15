@@ -11,6 +11,9 @@ import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.REDIRECT_TO_WHERE_HE_CAME_FROM;
 
+/**
+ * This commands expels a student from a faculty.
+ */
 public class DoExpelStudentCommand extends AbstractAdminOnlyCommand{
     @Override
     protected String executeAsAdministrator(Request request) throws Exception {

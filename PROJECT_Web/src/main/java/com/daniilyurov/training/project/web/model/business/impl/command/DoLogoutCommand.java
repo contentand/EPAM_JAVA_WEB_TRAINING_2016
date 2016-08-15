@@ -6,6 +6,9 @@ import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 import static com.daniilyurov.training.project.web.i18n.Value.SUC_SUCCESSFUL_LOGOUT;
 
+/**
+ * This commands logs the user out of the system.
+ */
 public class DoLogoutCommand extends AbstractAuthorizedRoleCommand {
 
     @Override
@@ -26,13 +29,12 @@ public class DoLogoutCommand extends AbstractAuthorizedRoleCommand {
         OutputTool output = outputToolFactory.getInstance(request);
 
         // forget user
-        output.invalidate();
+        output.invalidateSession();
 
         // notify about success
         output.setSuccessMsg(SUC_SUCCESSFUL_LOGOUT);
 
         // go to
         return GET_MAIN_PAGE;
-
     }
 }

@@ -25,7 +25,6 @@ public abstract class AbstractUnauthorizedRoleCommand extends AbstractGeneralRol
         OutputTool out = outputToolFactory.getInstance(request);
         out.setErrorMsg(ERR_PAGE_NOT_FOUND);
         return GET_MAIN_PAGE;
-
     }
 
     /**
@@ -36,8 +35,5 @@ public abstract class AbstractUnauthorizedRoleCommand extends AbstractGeneralRol
         OutputTool out = outputToolFactory.getInstance(request);
         out.setErrorMsg(ERR_PAGE_NOT_FOUND);
         return GET_MAIN_PAGE;
-
     }
-
-
 }

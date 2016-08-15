@@ -12,6 +12,10 @@ import java.util.Map;
 import static com.daniilyurov.training.project.web.utility.SessionAttributes.*;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_USER_REGISTRATION_FORM;
 
+/**
+ * Collects and sets the necessary information for displaying
+ * Create User Page.
+ */
 public class GetCreateUserPageCommand extends AbstractUnauthorizedRoleCommand {
 
     private ServicesFactory servicesFactory;
@@ -33,7 +37,7 @@ public class GetCreateUserPageCommand extends AbstractUnauthorizedRoleCommand {
 
         // get the list of all subjects available
         List<Map.Entry<String, String>> subjectList = subjectService
-                .getMapWithSubjectIdsAndTheirLocalNames(output);
+                .getListOfSubjectIdsAndTheirLocalNames(output);
 
         // make this list available for the view to display
         output.set(ATTRIBUTE_SUBJECT_LIST, subjectList);

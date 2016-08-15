@@ -49,9 +49,9 @@ public class DoChangeLanguageCommand implements Command {
             Locale assignedLocale = output.setLocale(locale);
 
             // persist new language preferences if it is an authorized user.
-            userValidator.getCurrentUser().ifPresent(user -> {
-                userService.updateLocalePreferencesForUser(user, assignedLocale);
-            });
+            userValidator.getCurrentUser().ifPresent(user ->
+                userService.updateLocalePreferencesForUser(user, assignedLocale)
+            );
 
             // finally
             return REDIRECT_TO_WHERE_HE_CAME_FROM;

@@ -4,14 +4,14 @@ import com.daniilyurov.training.project.web.i18n.NameLocalizable;
 
 import java.util.Optional;
 
-
+/**
+ * Subject contains names of the subject.
+ */
 public class Subject extends Entity implements NameLocalizable {
-
 
     private String enName;
     private String ruName;
     private String deName;
-
 
     @Override
     public String getEnName() {

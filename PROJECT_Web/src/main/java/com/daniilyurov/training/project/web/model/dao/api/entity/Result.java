@@ -1,15 +1,16 @@
 package com.daniilyurov.training.project.web.model.dao.api.entity;
 
-import com.daniilyurov.training.project.web.i18n.Value;
-
 import java.util.Optional;
 
-
+/**
+ * Result stores information about the owner of the result,
+ * the subject and the score for the subject
+ */
 public class Result extends Entity {
 
-    private User applicant;
-    private Subject subject;
-    private double result;
+    private User applicant; // owner of result
+    private Subject subject; // subject in question
+    private double result; // score for the subject
 
     public User getApplicant() {
         return applicant;

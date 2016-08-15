@@ -13,6 +13,9 @@ import com.daniilyurov.training.project.web.model.dao.api.entity.User;
 
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 
+/**
+ * This command cancels the application for studying at a faculty.
+ */
 public class DoCancelApplicationCommand extends AbstractApplicantOnlyCommand {
 
     @Override

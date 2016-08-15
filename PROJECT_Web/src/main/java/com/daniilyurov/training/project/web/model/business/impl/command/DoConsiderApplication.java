@@ -7,11 +7,15 @@ import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ApplicationValidator;
 import com.daniilyurov.training.project.web.model.business.impl.validator.ValidationException;
 import com.daniilyurov.training.project.web.model.dao.api.entity.Application;
-import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
 import static com.daniilyurov.training.project.web.model.business.impl.Key.GET_MAIN_PAGE;
 import static com.daniilyurov.training.project.web.model.business.impl.Key.REDIRECT_TO_WHERE_HE_CAME_FROM;
 
+/**
+ * This command is to indicate that the candidate
+ * has been added to the list by the administrator and
+ * is now under consideration.
+ */
 public class DoConsiderApplication extends AbstractAdminOnlyCommand {
 
 
@@ -37,7 +41,6 @@ public class DoConsiderApplication extends AbstractAdminOnlyCommand {
             applicationService.update(application);
 
             // notify
-            Faculty faculty = application.getFaculty();
             output.setSuccessMsg(Value.SUC_APPLICANT_UNDER_CONSIDERATION);
             return REDIRECT_TO_WHERE_HE_CAME_FROM;
         } catch (ValidationException e) {

@@ -5,7 +5,10 @@ import com.daniilyurov.training.project.web.model.dao.api.TransactionalRepositor
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
 import com.daniilyurov.training.project.web.model.dao.api.repository.*;
 
-
+/**
+ * RepositoryTool provides methods for getting instances of
+ * different repositories of different types.
+ */
 public class RepositoryTool {
 
     RepositoryManagerFactory repositoryManagerFactory;

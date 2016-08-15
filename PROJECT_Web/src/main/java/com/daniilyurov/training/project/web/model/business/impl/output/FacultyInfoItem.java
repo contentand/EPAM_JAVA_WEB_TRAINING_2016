@@ -5,6 +5,11 @@ import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 
 import java.util.Date;
 
+/**
+ * A wrapper for encapsulating information
+ * about a particular faculty.
+ * Motivation: pass such item to view for display.
+ */
 public class FacultyInfoItem {
 
     private Long id;
@@ -25,7 +30,7 @@ public class FacultyInfoItem {
     private Application.Status latestStatusOfCurrentUser;
 
     public enum RegistrationStatus {
-        SCHEDULED, IN_PROGRESS, OVER_UNSET, OVER_SET;
+        SCHEDULED, IN_PROGRESS, OVER_UNSET, OVER_SET
     }
 
     public static RegistrationStatus getStatus(Faculty faculty, Long applicants) {
@@ -49,6 +54,8 @@ public class FacultyInfoItem {
         return null;
     }
 
+    // Getters and setters are listed below
+
     public Long getId() {
         return id;
     }
@@ -65,6 +72,7 @@ public class FacultyInfoItem {
         this.localName = localName;
     }
 
+    @SuppressWarnings("unused") // used by view
     public String getLocalDescription() {
         return localDescription;
     }
@@ -73,6 +81,7 @@ public class FacultyInfoItem {
         this.localDescription = localDescription;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Date getRegistrationStart() {
         return registrationStart;
     }
@@ -81,6 +90,7 @@ public class FacultyInfoItem {
         this.registrationStart = registrationStart;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Date getRegistrationEnd() {
         return registrationEnd;
     }
@@ -89,6 +99,7 @@ public class FacultyInfoItem {
         this.registrationEnd = registrationEnd;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Date getStudyStart() {
         return studyStart;
     }
@@ -97,6 +108,7 @@ public class FacultyInfoItem {
         this.studyStart = studyStart;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Long getDuration() {
         return duration;
     }
@@ -105,6 +117,7 @@ public class FacultyInfoItem {
         this.duration = duration;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Integer getMaxStudents() {
         return maxStudents;
     }
@@ -113,6 +126,7 @@ public class FacultyInfoItem {
         this.maxStudents = maxStudents;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Long getNumberOfGraduates() {
         return numberOfGraduates;
     }
@@ -121,6 +135,7 @@ public class FacultyInfoItem {
         this.numberOfGraduates = numberOfGraduates;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Long getNumberOfStudents() {
         return numberOfStudents;
     }
@@ -129,6 +144,7 @@ public class FacultyInfoItem {
         this.numberOfStudents = numberOfStudents;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Long getNumberOfAppliedStudents() {
         return numberOfAppliedStudents;
     }
@@ -137,6 +153,7 @@ public class FacultyInfoItem {
         this.numberOfAppliedStudents = numberOfAppliedStudents;
     }
 
+    @SuppressWarnings("unused") // used by view
     public RegistrationStatus getRegistrationStatus() {
         return registrationStatus;
     }
@@ -145,6 +162,7 @@ public class FacultyInfoItem {
         this.registrationStatus = registrationStatus;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Long getNumberOfStudentsToAddUnderConsideration() {
         return numberOfStudentsToAddUnderConsideration;
     }
@@ -153,6 +171,7 @@ public class FacultyInfoItem {
         this.numberOfStudentsToAddUnderConsideration = numberOfStudentsToAddUnderConsideration;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Long getApplicationIdForCurrentSelection() {
         return applicationIdForCurrentSelection;
     }
@@ -161,6 +180,7 @@ public class FacultyInfoItem {
         this.applicationIdForCurrentSelection = applicationIdForCurrentSelection;
     }
 
+    @SuppressWarnings("unused") // used by view
     public Application.Status getLatestStatusOfCurrentUser() {
         return latestStatusOfCurrentUser;
     }
@@ -169,6 +189,7 @@ public class FacultyInfoItem {
         this.latestStatusOfCurrentUser = latestStatusOfCurrentUser;
     }
 
+    @SuppressWarnings("unused") // used by view
     public String[] getRequiredSubjects() {
         return requiredSubjects;
     }
