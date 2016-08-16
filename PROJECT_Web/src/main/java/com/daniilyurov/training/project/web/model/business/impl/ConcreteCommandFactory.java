@@ -114,7 +114,7 @@ public class ConcreteCommandFactory implements CommandFactory {
             // check if such requestKey is mapped to command class
             String className = commandClassMapping.getProperty(requestKey);
             if (className == null) {
-                logger.debug("No mapping for such requestKey is found.");
+                logger.error("No mapping for requestKey" + requestKey + " is found.");
                 return commandCache.get(Key.EMPTY);
             }
 

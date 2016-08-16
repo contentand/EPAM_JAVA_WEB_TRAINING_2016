@@ -104,7 +104,7 @@ public class ContextConfigurator {
             environment = (Context) (new InitialContext().lookup("java:comp/env"));
             return (DataSource) environment.lookup("jdbc/university");
         } catch (NamingException e) {
-            // TODO log!
+            logger.error("No data source found in JNDI", e);
             throw new IllegalStateException("No Data Source found in JNDI.");
         }
     }
