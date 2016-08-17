@@ -247,3 +247,19 @@ header .unselected-header-element:hover {
 .small-btn:hover {
     background: black;
 }
+
+.show-students {
+    text-align: center;
+    background:cadetblue;
+    color:white;
+    padding: 5px 10px;
+    display: block;
+    margin: 3px 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.show-students:hover {
+    background: #3c5a5a;
+}

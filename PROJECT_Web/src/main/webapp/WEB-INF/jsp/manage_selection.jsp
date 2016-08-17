@@ -32,13 +32,13 @@
     </c:if>
 
     <att:applicant-table
-            headName="page.select_the_best"
+            headName="page.underconsideration"
             applicants="${applicantsUnderConsideration}"
             buttonPresent="false"/>
 
 
     <att:applicant-table
-            headName="page.select_the_best"
+            headName="page.unconsidered"
             applicants="${unconsideredApplicants}"
             buttonPresent="true"/>
 

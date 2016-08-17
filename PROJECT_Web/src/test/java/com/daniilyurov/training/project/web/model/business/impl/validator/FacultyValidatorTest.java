@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import static com.daniilyurov.training.project.web.utility.RequestParameters.PARAMETER_FACULTY_ID;
 import static org.junit.Assert.*;
 
 
@@ -61,8 +62,8 @@ public class FacultyValidatorTest extends GenericValidator {
         faculty.setDateRegistrationStarts(Date.valueOf(today.minusMonths(1)));
         faculty.setDateRegistrationEnds(Date.valueOf(today.plusMonths(1)));
         faculty.setDateStudiesStart(Date.valueOf(today.plusMonths(2)));
-        validator = spy(validator);
-        doReturn(faculty).when(validator).parseExistingFacultyFromUrl();
+        when(input.getParameter(PARAMETER_FACULTY_ID)).thenReturn("3");
+        when(facultyService.getById(eq(3L))).thenReturn(faculty);
 
         // execute
         Faculty result = validator.parseAndGetFacultyValidForApplication();

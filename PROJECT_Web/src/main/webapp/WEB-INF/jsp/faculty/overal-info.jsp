@@ -11,6 +11,12 @@
         <div class="subject">${subject}</div>
     </c:forEach>
     <hr>
-    <div ><fmt:message key="page.nStudents" bundle="${bd}"/>: ${faculty.numberOfStudents},
-        <fmt:message key="page.nGraduates" bundle="${bd}"/>: ${faculty.numberOfGraduates}</div>
+    <div >
+        <fmt:message key="page.nStudents" bundle="${bd}"/>: ${faculty.numberOfStudents},
+        <fmt:message key="page.nGraduates" bundle="${bd}"/>: ${faculty.numberOfGraduates}
+        <a class="show-students"
+           href="${pageContext.request.contextPath}/faculty/${faculty.id}/all">
+            <fmt:message key="page.viewStudents" bundle="${bd}"/>
+        </a>
+    </div>
 </div>

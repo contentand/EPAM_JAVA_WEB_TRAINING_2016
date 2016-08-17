@@ -4,6 +4,7 @@ package com.daniilyurov.training.project.web.model.business.impl.service;
 import com.daniilyurov.training.project.web.model.business.impl.output.ApplicantInfoItem;
 import com.daniilyurov.training.project.web.model.business.impl.output.FacultyInfoItem;
 import com.daniilyurov.training.project.web.i18n.Localize;
+import com.daniilyurov.training.project.web.model.business.impl.tool.OutputTool;
 import com.daniilyurov.training.project.web.model.business.impl.tool.RepositoryTool;
 import com.daniilyurov.training.project.web.model.dao.api.entity.*;
 import com.daniilyurov.training.project.web.model.dao.api.DaoException;
@@ -141,23 +142,7 @@ public class ApplicationService {
                 ApplicantInfoItem applicant = new ApplicantInfoItem();
 
                 // Fill info about applicant
-                User user = application.getUser();
-                applicant.setApplicationId(application.getId());
-                applicant.setLocalFirstName(localize.getLocalFirstName(user));
-                applicant.setLocalLastName(localize.getLocalLastName(user));
-
-                // count total score of the applicant
-                double totalScore = user.getAverageSchoolResult();
-
-                // add all relevant subject results to total score of the applicant
-                Set<Subject> subjectsRequired = faculty.getRequiredSubjects();
-                Result[] studentResults = repository.getAutoCommittalResultRepository().getAllOf(user);
-                for (Result result : studentResults) {
-                    if (subjectsRequired.contains(result.getSubject())) {
-                        totalScore += result.getResult();
-                    }
-                }
-                applicant.setTotalScore(totalScore);
+                fillInfoAboutApplicant(localize, faculty, application, applicant);
 
                 results.add(applicant);
             }
@@ -187,37 +172,83 @@ public class ApplicationService {
         for (Application application : allApplications) {
 
             // Sub result container
-            ApplicantInfoItem applicant = new ApplicantInfoItem();
+            ApplicantInfoItem applicantInfo = new ApplicantInfoItem();
 
             // Fill info about applicant
-            User user = application.getUser();
-            applicant.setApplicationId(application.getId());
-            applicant.setLocalFirstName(localization.getLocalFirstName(user));
-            applicant.setLocalLastName(localization.getLocalLastName(user));
-
-            // count total score of the applicant
-            double totalScore = user.getAverageSchoolResult();
-
-            // add all relevant subject results to total score of the applicant
-            Set<Subject> subjectsRequired = faculty.getRequiredSubjects();
-            Result[] studentResults = repository.getAutoCommittalResultRepository().getAllOf(user);
-            for (Result result : studentResults) {
-                if (subjectsRequired.contains(result.getSubject())) {
-                    totalScore += result.getResult();
-                }
-            }
-            applicant.setTotalScore(totalScore);
+            fillInfoAboutApplicant(localization, faculty, application, applicantInfo);
 
             // add the sub result in the appropriate bucket of the result
             if (application.getStatus().equals(Application.Status.APPLIED)) {
-                applicants.getUnconsideredApplicants().add(applicant);
+                applicants.getUnconsideredApplicants().add(applicantInfo);
             }
             if (application.getStatus().equals(Application.Status.UNDER_CONSIDERATION)) {
-                applicants.getApplicantsUnderConsideration().add(applicant);
+                applicants.getApplicantsUnderConsideration().add(applicantInfo);
             }
         }
         // finally
         return applicants;
+    }
+
+    /**
+     * Returns a sorted set of students of a particular faculty wrapped by ApplicationInfoItem class.
+     *
+     * @param faculty to search for
+     * @param localization for information to be localized
+     * @return info about all students of current faculty
+     * @throws DaoException if repository layer fails.
+     */
+    public TreeSet<ApplicantInfoItem> collectStudentsSortedByTotalScore(Faculty faculty,
+                                                                        Localize localization)
+            throws DaoException {
+
+        // collect all applications with status ACCEPTED (student) that belong to a particular faculty
+        Application[] applications = repository.getAutoCommittalApplicationRepository()
+                .getAllOf(faculty, Application.Status.ACCEPTED);
+
+        // Result container
+        TreeSet<ApplicantInfoItem> allInfo = new TreeSet<>();
+
+        // For every application
+        for (Application application : applications) {
+
+            // Sub result container
+            ApplicantInfoItem applicantInfo = new ApplicantInfoItem();
+
+            // Fill info about applicant
+            fillInfoAboutApplicant(localization, faculty, application, applicantInfo);
+
+            allInfo.add(applicantInfo);
+        }
+
+        return allInfo;
+    }
+
+    private void fillInfoAboutApplicantTotalScore(Faculty faculty, ApplicantInfoItem applicant,
+                                                  User user) throws DaoException {
+        double totalScore = user.getAverageSchoolResult();
+
+        // add all relevant subject results to total score of the applicant
+        Set<Subject> subjectsRequired = faculty.getRequiredSubjects();
+        Result[] studentResults = repository.getAutoCommittalResultRepository().getAllOf(user);
+        for (Result result : studentResults) {
+            if (subjectsRequired.contains(result.getSubject())) {
+                totalScore += result.getResult();
+            }
+        }
+        applicant.setTotalScore(totalScore);
+    }
+
+    private void fillInfoAboutApplicant(Localize localization,
+                                        Faculty faculty,
+                                        Application application,
+                                        ApplicantInfoItem applicant) throws DaoException {
+
+        User user = application.getUser();
+        applicant.setApplicationId(application.getId());
+        applicant.setLocalFirstName(localization.getLocalFirstName(user));
+        applicant.setLocalLastName(localization.getLocalLastName(user));
+        // count total score of the applicant
+        fillInfoAboutApplicantTotalScore(faculty, applicant, user);
     }
 
     /**
@@ -226,7 +257,7 @@ public class ApplicationService {
      * under consideration (sorted by total score).
      * Motivation: pass such item to view for display.
      */
-    public class Applicants {
+    public static class Applicants {
         TreeSet<ApplicantInfoItem> unconsideredApplicants = new TreeSet<>();
         TreeSet<ApplicantInfoItem> applicantsUnderConsideration = new TreeSet<>();
 

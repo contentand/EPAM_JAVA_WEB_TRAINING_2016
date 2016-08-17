@@ -38,6 +38,7 @@ public interface SessionAttributes {
     String ATTRIBUTE_APPLICATIONS_UNDER_CONSIDERATION = "applicantsUnderConsideration";
     String ATTRIBUTE_STUDENTS_FROM_LAST_SELECTION = "studentsFromLastSelection";
     String ATTRIBUTE_USER_INFO = "user";
+    String ATTRIBUTE_STUDENTS_OF_FACULTY = "studentsOfFaculty";
 
     Set<String> CORE_SESSION_ATTRIBUTES = Collections.unmodifiableSet(new HashSet<String>() {{
         addAll(Arrays.asList(BUNDLE, LOCALE, USER_ID, ROLE, CSRF_TOKEN_SERVER));

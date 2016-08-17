@@ -51,8 +51,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot application instances with particular id!");
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_APPLICATION,
-                PreparedStatement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement preparedStatement = connection
+                .prepareStatement(CREATE_APPLICATION, PreparedStatement.RETURN_GENERATED_KEYS))
         {
             // id is set by the database automatically. We are retrieving the assigned id below
             preparedStatement.setLong(1, application.getFaculty().getId());
@@ -71,7 +71,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             }
 
         } catch (SQLException | NullPointerException e) {
-            throw new DaoException("Unable to create application instance. " + e.getMessage(), e);
+            throw new DaoException("Unable to create application instance. "
+                    + e.getMessage(), e);
         }
     }
 
@@ -81,7 +82,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             throw new DaoException("You cannot update applications with no id!");
         }
 
-        try(PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_APPLICATION))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(UPDATE_APPLICATION))
         {
             preparedStatement.setString(1, application.getStatus().name());
             preparedStatement.setDate(2, application.getDateStudiesStart());
@@ -116,12 +118,14 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
 
         Application application;
 
-        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_APPLICATION_BY_ID))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(GET_APPLICATION_BY_ID))
         {
             preparedStatement.setLong(1, id);
             preparedStatement.execute();
 
-            application = extractApplicationsFromResultSet(preparedStatement).stream().findFirst().orElse(null);
+            application = extractApplicationsFromResultSet(preparedStatement)
+                    .stream().findFirst().orElse(null);
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
             throw new DaoException("Unable to retrieve application. " + e.getMessage(), e);
@@ -134,7 +138,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
     public Application[] getAll() throws DaoException {
         Set<Application> applications;
 
-        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_APPLICATIONS))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(GET_ALL_APPLICATIONS))
         {
             preparedStatement.execute();
             applications = extractApplicationsFromResultSet(preparedStatement);
@@ -154,13 +159,15 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
         }
 
         Set<Application> applications;
-        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_APPLICATIONS_OF_USER))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(GET_ALL_APPLICATIONS_OF_USER))
         {
             preparedStatement.setLong(1, user.getId());
             applications = extractApplicationsFromResultSet(preparedStatement);
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
-            throw new DaoException("Unable to retrieve applications of user. " + e.getMessage(), e);
+            throw new DaoException("Unable to retrieve applications of user. "
+                    + e.getMessage(), e);
         }
 
         return applications.stream().toArray(Application[]::new);
@@ -169,7 +176,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
     @Override
     public Application getLastOf(Faculty faculty, Long userId) throws DaoException {
         if (faculty.getId() == null) {
-            throw new DaoException("You cannot select applications of a faculty that has no id!");
+            throw new DaoException("You cannot select applications " +
+                    "of a faculty that has no id!");
         }
         if (userId == null) {
             throw new DaoException("You cannot select applications of a user that has no id!");
@@ -177,16 +185,19 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
 
         Application application;
 
-        try(PreparedStatement preparedStatement = connection.prepareStatement(GET_LAST_APPLICATION_OF_USER_FOR_FACULTY))
+        try(PreparedStatement preparedStatement = connection
+                .prepareStatement(GET_LAST_APPLICATION_OF_USER_FOR_FACULTY))
         {
             preparedStatement.setLong(1, faculty.getId());
             preparedStatement.setLong(2, userId);
             preparedStatement.setLong(3, faculty.getId());
             preparedStatement.setLong(4, userId);
-            application = extractApplicationsFromResultSet(preparedStatement).stream().findFirst().orElse(null);
+            application = extractApplicationsFromResultSet(preparedStatement)
+                    .stream().findFirst().orElse(null);
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
-            throw new DaoException("Unable to retrieve applications for particular faculty with particular status. "
+            throw new DaoException("Unable to retrieve applications for particular " +
+                    "faculty with particular status. "
                     + e.getMessage(), e);
         }
 
@@ -194,9 +205,11 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
     }
 
     @Override
-    public Application[] getAllOf(Faculty faculty, Application.Status status) throws DaoException {
+    public Application[] getAllOf(Faculty faculty, Application.Status status)
+            throws DaoException {
         if (faculty.getId() == null) {
-            throw new DaoException("You cannot select applications of a faculty that has no id!");
+            throw new DaoException("You cannot select applications of a " +
+                    "faculty that has no id!");
         }
         if (status == null) {
             throw new DaoException("You cannot select applications of no status!");
@@ -211,7 +224,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             applications = extractApplicationsFromResultSet(preparedStatement);
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
-            throw new DaoException("Unable to retrieve applications for particular faculty with particular status. "
+            throw new DaoException("Unable to retrieve applications for " +
+                    "particular faculty with particular status. "
                     + e.getMessage(), e);
         }
 
@@ -221,10 +235,12 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
     @Override
     public Application[] getAllOf(Faculty faculty, Date studyStartDate) throws DaoException {
         if (faculty.getId() == null) {
-            throw new DaoException("You cannot select applications of a faculty that has no id!");
+            throw new DaoException("You cannot select applications of" +
+                    " a faculty that has no id!");
         }
         if (studyStartDate == null) {
-            throw new DaoException("You cannot select applications of no date studies start!");
+            throw new DaoException("You cannot select applications " +
+                    "of no date studies start!");
         }
 
         Set<Application> applications;
@@ -267,7 +283,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             }
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
-            throw new DaoException("Unable to count applications for particular faculty with particular status.  "
+            throw new DaoException("Unable to count applications for particular " +
+                    "faculty with particular status.  "
                     + e.getMessage(), e);
         }
     }
@@ -295,13 +312,16 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             }
 
         } catch (SQLException | NullPointerException | IllegalArgumentException e) {
-            throw new DaoException("Unable to count applications of particular user with particular status.  "
+            throw new DaoException("Unable to count applications of particular user " +
+                    "with particular status.  "
                     + e.getMessage(), e);
         }
     }
 
     @Override
-    public void updateAll(Set<Long> applicationIds, Application.Status status) throws DaoException {
+    public void updateAll(Set<Long> applicationIds, Application.Status status)
+            throws DaoException {
+
         if (applicationIds == null) {
             throw new DaoException("Null application is passed!");
         }
@@ -325,7 +345,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
         }
     }
 
-    private Set<Application> extractApplicationsFromResultSet(PreparedStatement preparedStatement) throws SQLException {
+    private Set<Application> extractApplicationsFromResultSet(PreparedStatement preparedStatement)
+            throws SQLException {
 
         Set<Application> applications = new LinkedHashSet<>();
 
@@ -333,9 +354,12 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
             while (resultSet.next()) {
                 Application application = new Application();
                 application.setId(resultSet.getLong("application.id"));
-                application.setStatus(Application.Status.valueOf(resultSet.getString("application.status")));
-                application.setDateStudiesStart(resultSet.getDate("application.date_studies_start"));
-                application.setMonthsToStudy(resultSet.getLong("application.months_to_study"));
+                application.setStatus(Application.Status
+                        .valueOf(resultSet.getString("application.status")));
+                application.setDateStudiesStart(resultSet
+                        .getDate("application.date_studies_start"));
+                application.setMonthsToStudy(resultSet
+                        .getLong("application.months_to_study"));
 
                 Faculty faculty = new Faculty();
                 faculty.setId(resultSet.getLong("application.faculty_id"));
@@ -346,8 +370,10 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
                 faculty.setDeDescription(resultSet.getString("faculty.de_description"));
                 faculty.setRuDescription(resultSet.getString("faculty.ru_description"));
                 faculty.setStudents(resultSet.getInt("faculty.students"));
-                faculty.setDateRegistrationStarts(resultSet.getDate("faculty.date_registration_starts"));
-                faculty.setDateRegistrationEnds(resultSet.getDate("faculty.date_registration_ends"));
+                faculty.setDateRegistrationStarts(resultSet
+                        .getDate("faculty.date_registration_starts"));
+                faculty.setDateRegistrationEnds(resultSet
+                        .getDate("faculty.date_registration_ends"));
                 faculty.setDateStudiesStart(resultSet.getDate("faculty.date_studies_start"));
                 faculty.setMonthsToStudy(resultSet.getLong("faculty.months_to_study"));
 
@@ -364,7 +390,8 @@ public class TransactionalJdbcApplicationRepository implements ApplicationReposi
                 applicant.setLatinLastName(resultSet.getString("user.latin_last_name"));
                 applicant.setCyrillicFirstName(resultSet.getString("user.cyrillic_first_name"));
                 applicant.setCyrillicLastName(resultSet.getString("user.cyrillic_last_name"));
-                applicant.setAverageSchoolResult(resultSet.getDouble("user.average_school_result"));
+                applicant.setAverageSchoolResult(resultSet
+                        .getDouble("user.average_school_result"));
 
                 application.setUser(applicant);
 

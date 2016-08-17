@@ -53,10 +53,10 @@
                                 <td>${faculty.maxStudents}</td>
                             </tr>
                             <c:if test="${faculty.registrationStatus == 'IN_PROGRESS'}">
-                            <tr>
-                                <td><fmt:message key="page.numberOfAppliedStudents" bundle="${bd}"/> : </td>
-                                <td>${faculty.numberOfAppliedStudents}</td>
-                            </tr>
+                                <tr>
+                                    <td><fmt:message key="page.numberOfAppliedStudents" bundle="${bd}"/> : </td>
+                                    <td>${faculty.numberOfAppliedStudents}</td>
+                                </tr>
                             </c:if>
                         </table>
                     </div>

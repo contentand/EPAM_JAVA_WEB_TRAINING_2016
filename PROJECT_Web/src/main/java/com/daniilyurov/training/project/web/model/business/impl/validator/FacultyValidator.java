@@ -9,6 +9,7 @@ import com.daniilyurov.training.project.web.model.dao.api.entity.Faculty;
 import java.util.Date;
 
 import static com.daniilyurov.training.project.web.i18n.Value.*;
+import static com.daniilyurov.training.project.web.utility.RequestParameters.*;
 
 /**
  * FacultyValidator contains methods necessary for
@@ -41,7 +42,8 @@ public class FacultyValidator extends AbstractValidator {
      * @throws DaoException        in case Repository fails.
      */
     public Faculty parseAndGetFacultyValidForApplication() throws ValidationException, DaoException {
-        Faculty faculty = parseExistingFacultyFromUrl();
+        Long id = parseFacultyIdFromParameters();
+        Faculty faculty = getExistingFaculty(id);
         ensureRegistrationIsOpen(faculty);
         return faculty;
     }
@@ -119,5 +121,11 @@ public class FacultyValidator extends AbstractValidator {
             output.setErrorMsg(ERR_REGISTRATION_OVER);
             throw new ValidationException();
         }
+    }
+
+    private Long parseFacultyIdFromParameters() throws ValidationException {
+        currentField = FIELD_FACULTY;
+        String idString = input.getParameter(PARAMETER_FACULTY_ID);
+        return parseLong(idString);
     }
 }
